@@ -1,0 +1,29 @@
+{
+  "extends": ["tslint:recommended", "tslint-config-prettier"],
+  "rules": {
+    "ordered-imports": [
+      true,
+      {
+        "named-imports-order": "case-insensitive",
+        "import-sources-order": "case-insensitive"
+      }
+    ],
+    "member-ordering": [
+      true,
+      {
+        "order": [
+          "static-field",
+          "static-method",
+          "instance-field",
+          "constructor",
+          "instance-method"
+        ]
+      }
+    ],
+    "member-access": [true, "no-public"],
+    "no-console": false,
+    "no-var-requires": false,
+    "no-unused-expression": false,
+    "object-literal-sort-keys": false
+  }
+}
