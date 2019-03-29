@@ -4,7 +4,7 @@ import { verifyList } from '../../utils/verify-list';
 export type Job = 'update' | 'deploy' | 'test';
 export const availableJobs: Job[] = ['update', 'deploy', 'test'];
 
-export async function verifyJobs(jobs: string[] = []): Promise<string[]> {
+export async function verifyJobs(jobs: string[]): Promise<Job[]> {
   return verifyList(jobs, availableJobs, () => askForFobs());
 }
 

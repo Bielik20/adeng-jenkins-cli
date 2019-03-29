@@ -16,8 +16,8 @@ export async function start() {
     .description('Run Jenkins jobs')
     .command('run')
     .alias('r')
-    .option('-j, --jobs <items>', 'Jenkins jobs to run', list)
-    .option('-p, --projects <items>', 'Project to include', list)
+    .option('-j, --jobs <items>', 'Jenkins jobs to run', list, [])
+    .option('-p, --projects <items>', 'Project to include', list, [])
     .option('-e, --extended', 'Whether to show extended options', false)
     .action(({ jobs, projects, extended }) => {
       run(jobs, projects, extended);

@@ -2,14 +2,19 @@ import * as inquirer from 'inquirer';
 import { Job } from './jobs';
 import { availableProjects, Project } from './projects';
 
-type FilterQuestion = inquirer.Question & {
-  destined: { jobs: Job[]; projects: Project[]; extended: boolean };
-};
+interface FilterQuestion extends inquirer.Question {
+  name: keyof QuestionsResult;
+  destined: {
+    jobs: Job[];
+    projects: Project[];
+    extended: boolean;
+  };
+}
 
 export interface QuestionsResult {
-  branch: string;
-  adEngineVersion: string;
-  sandbox: string;
+  branch?: string;
+  adEngineVersion?: string;
+  sandbox?: string;
   configBranch?: string;
   datacenter?: string;
   crowdinBranch?: string;
@@ -18,12 +23,12 @@ export interface QuestionsResult {
   query?: string;
   fandomEnvironment?: string;
   extension?: string;
-  name: string;
+  name?: string;
 }
 
 export function getQuestions(
-  jobs: string[],
-  projects: string[],
+  jobs: Job[],
+  projects: Project[],
   extended: boolean,
 ): inquirer.Questions {
   return questions.filter(question => {
