@@ -43,7 +43,6 @@ export function getQuestions(
 const questions: FilterQuestion[] = [
   {
     name: 'branch',
-    type: 'input',
     message: 'Project branch',
     validate: required,
     destined: {
@@ -54,7 +53,6 @@ const questions: FilterQuestion[] = [
   },
   {
     name: 'adEngineVersion',
-    type: 'input',
     message: '@wikia/ad-engine version',
     validate: required,
     destined: {
@@ -86,7 +84,6 @@ const questions: FilterQuestion[] = [
   },
   {
     name: 'configBranch',
-    type: 'input',
     message: 'Config branch e.g. release-01, PLAT-345',
     destined: {
       jobs: ['update'],
@@ -96,7 +93,6 @@ const questions: FilterQuestion[] = [
   },
   {
     name: 'datacenter',
-    type: 'input',
     message: 'Datacenter',
     validate: required,
     default: 'sjc',
@@ -108,7 +104,6 @@ const questions: FilterQuestion[] = [
   },
   {
     name: 'crowdinBranch',
-    type: 'input',
     message: 'Branch for Crowdin translations (leave empty if translations update not needed)',
     destined: {
       jobs: ['update'],
@@ -129,9 +124,7 @@ const questions: FilterQuestion[] = [
   },
   {
     name: 'testBranch',
-    type: 'input',
-    message:
-      'Branch for Tests. Leave this parameter empty if you want to run on jobs DEFAULT branch e.g. origin/branch-name',
+    message: 'Branch for Tests',
     destined: {
       jobs: ['test'],
       projects: availableProjects,
@@ -140,7 +133,6 @@ const questions: FilterQuestion[] = [
   },
   {
     name: 'query',
-    type: 'input',
     message: 'Url params',
     default: `cb=${+new Date()}`,
     destined: {
@@ -151,7 +143,6 @@ const questions: FilterQuestion[] = [
   },
   {
     name: 'fandomEnvironment',
-    type: 'input',
     message: 'Environment for Fandom ( Upstream) tests',
     default: 'sandbox-adeng',
     destined: {
@@ -162,7 +153,6 @@ const questions: FilterQuestion[] = [
   },
   {
     name: 'extension',
-    type: 'input',
     message: 'Additional browser extenstions e.g. adblock',
     destined: {
       jobs: ['test'],
@@ -172,7 +162,6 @@ const questions: FilterQuestion[] = [
   },
   {
     name: 'name',
-    type: 'input',
     message: 'Custom name which will be added to tab name',
     validate: required,
     destined: {
