@@ -45,6 +45,8 @@ const questions: FilterQuestion[] = [
     name: 'branch',
     message: 'Project branch',
     validate: required,
+    filter: adenToUpper,
+    transformer: adenToUpper,
     destined: {
       jobs: ['update', 'deploy'],
       projects: availableProjects,
@@ -53,8 +55,9 @@ const questions: FilterQuestion[] = [
   },
   {
     name: 'adEngineVersion',
-    message: '@wikia/ad-engine version',
+    message: 'Version of @wikia/ad-engine',
     validate: required,
+    default: (answers: QuestionsResult) => answers.branch,
     destined: {
       jobs: ['update'],
       projects: availableProjects,
@@ -77,8 +80,8 @@ const questions: FilterQuestion[] = [
     ],
     default: 'sandbox-adeng02',
     destined: {
-      jobs: ['deploy'],
-      projects: ['app', 'mobile-wiki'],
+      jobs: ['deploy', 'test'],
+      projects: availableProjects,
       extended: false,
     },
   },
@@ -164,6 +167,7 @@ const questions: FilterQuestion[] = [
     name: 'name',
     message: 'Custom name which will be added to tab name',
     validate: required,
+    default: (answers: QuestionsResult) => answers.branch || answers.sandbox,
     destined: {
       jobs: ['test'],
       projects: availableProjects,
@@ -172,8 +176,15 @@ const questions: FilterQuestion[] = [
   },
 ];
 
-function required(value?: string): boolean | string {
-  if (!!value) {
+function adenToUpper(input: string) {
+  if (input.toLowerCase().indexOf('aden') === 0) {
+    return input.toUpperCase();
+  }
+  return input;
+}
+
+function required(input?: string): boolean | string {
+  if (!!input) {
     return true;
   } else {
     return 'This file is required.';
