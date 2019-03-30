@@ -9,6 +9,7 @@ export async function sandbox(input: string) {
   } else {
     const result = await inquirer.prompt<{ sandbox: Sandbox }>(question);
     store.sandbox = result.sandbox;
+    console.log('');
   }
 }
 

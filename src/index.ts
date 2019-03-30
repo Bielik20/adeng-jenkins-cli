@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import * as clear from 'clear';
 import * as program from 'commander';
 import { textSync } from 'figlet';
+import { login } from './commands/login';
 import { run } from './commands/run';
 import { sandbox } from './commands/sandbox';
 import { list } from './utils/list';
@@ -29,6 +30,13 @@ export async function start() {
     .option('name', 'Name of the sandbox')
     .action(input => {
       sandbox(input);
+    });
+  program
+    .description('Login to Jenkins')
+    .command('login')
+    .alias('l')
+    .action(() => {
+      login();
     });
 
   if (process.argv.length === 2) {
