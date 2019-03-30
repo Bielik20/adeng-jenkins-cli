@@ -1,3 +1,4 @@
+import axios from 'axios';
 import * as branch from 'git-branch';
 import * as inquirer from 'inquirer';
 import { Job } from './jobs';
@@ -57,8 +58,9 @@ const questions: FilterQuestion[] = [
   },
   {
     name: 'adEngineVersion',
-    message: 'Version of @wikia/ad-engine',
+    message: 'Version of @wikia/ad-engine (can be "latest")',
     validate: required,
+    filter: replaceLatestWithAdEngineVersion,
     default: (answers: QuestionsResult) => answers.branch,
     destined: {
       jobs: ['update'],
@@ -199,4 +201,16 @@ function currentBranch(): string | undefined {
   } catch (e) {
     return undefined;
   }
+}
+
+async function replaceLatestWithAdEngineVersion(input: string) {
+  if (input !== 'latest') {
+    return input;
+  }
+
+  const response = await axios.get(
+    'https://raw.githubusercontent.com/Wikia/ad-engine/dev/package.json',
+  );
+
+  return `v${response.data.version}`;
 }
