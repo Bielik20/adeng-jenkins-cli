@@ -28,6 +28,7 @@
     "commander": "^2.19.0",
     "configstore": "^4.0.0",
     "figlet": "^1.2.1",
+    "git-branch": "^2.0.1",
     "inquirer": "^6.2.2",
     "minimist": "^1.2.0"
   },

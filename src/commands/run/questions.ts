@@ -1,3 +1,4 @@
+import * as branch from 'git-branch';
 import * as inquirer from 'inquirer';
 import { Job } from './jobs';
 import { availableProjects, Project } from './projects';
@@ -47,6 +48,7 @@ const questions: FilterQuestion[] = [
     validate: required,
     filter: adenToUpper,
     transformer: adenToUpper,
+    default: currentBranch,
     destined: {
       jobs: ['update', 'deploy'],
       projects: availableProjects,
@@ -188,5 +190,13 @@ function required(input?: string): boolean | string {
     return true;
   } else {
     return 'This file is required.';
+  }
+}
+
+function currentBranch(): string | undefined {
+  try {
+    return branch.sync();
+  } catch (e) {
+    return undefined;
   }
 }
