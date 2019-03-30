@@ -179,8 +179,8 @@ const questions: FilterQuestion[] = [
 ];
 
 function adenToUpper(input: string) {
-  if (input.toLowerCase().indexOf('aden') === 0) {
-    return input.toUpperCase();
+  if (input.indexOf('aden-') === 0) {
+    return `ADEN-${input.slice(5)}`;
   }
   return input;
 }
