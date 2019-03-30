@@ -1,4 +1,7 @@
-export async function verifyList<T extends string>(
+/**
+ * Filters list and return result of fallback if empty.
+ */
+export async function filterList<T extends string>(
   input: string[],
   available: T[],
   fallback: () => Promise<T[]>,

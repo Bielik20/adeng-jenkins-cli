@@ -1,6 +1,12 @@
-import axios from 'axios';
-import * as branch from 'git-branch';
 import * as inquirer from 'inquirer';
+import {
+  adenToUpper,
+  currentBranch,
+  replaceLatestWithAdEngineVersion,
+  requiredInput,
+} from '../../utils/question-helpers';
+import { sandboxes } from '../../utils/sandbox';
+import { store } from '../../utils/store';
 import { Job } from './jobs';
 import { availableProjects, Project } from './projects';
 
@@ -46,7 +52,7 @@ const questions: FilterQuestion[] = [
   {
     name: 'branch',
     message: 'Project branch',
-    validate: required,
+    validate: requiredInput,
     filter: adenToUpper,
     transformer: adenToUpper,
     default: currentBranch,
@@ -59,7 +65,7 @@ const questions: FilterQuestion[] = [
   {
     name: 'adEngineVersion',
     message: 'Version of @wikia/ad-engine (can be "latest")',
-    validate: required,
+    validate: requiredInput,
     filter: replaceLatestWithAdEngineVersion,
     default: (answers: QuestionsResult) => answers.branch,
     destined: {
@@ -72,17 +78,9 @@ const questions: FilterQuestion[] = [
     name: 'sandbox',
     type: 'list',
     message: 'Sandbox',
-    validate: required,
-    choices: [
-      'sandbox-adeng01',
-      'sandbox-adeng02',
-      'sandbox-adeng03',
-      'sandbox-adeng04',
-      'sandbox-adeng05',
-      'sandbox-adeng06',
-      'sandbox-adeng07',
-    ],
-    default: 'sandbox-adeng02',
+    validate: requiredInput,
+    choices: sandboxes,
+    default: store.sandbox,
     destined: {
       jobs: ['deploy', 'test'],
       projects: availableProjects,
@@ -101,7 +99,7 @@ const questions: FilterQuestion[] = [
   {
     name: 'datacenter',
     message: 'Datacenter',
-    validate: required,
+    validate: requiredInput,
     default: 'sjc',
     destined: {
       jobs: ['update'],
@@ -170,7 +168,7 @@ const questions: FilterQuestion[] = [
   {
     name: 'name',
     message: 'Custom name which will be added to tab name',
-    validate: required,
+    validate: requiredInput,
     default: (answers: QuestionsResult) => answers.branch || answers.sandbox,
     destined: {
       jobs: ['test'],
@@ -179,38 +177,3 @@ const questions: FilterQuestion[] = [
     },
   },
 ];
-
-function adenToUpper(input: string) {
-  if (input.indexOf('aden-') === 0) {
-    return `ADEN-${input.slice(5)}`;
-  }
-  return input;
-}
-
-function required(input?: string): boolean | string {
-  if (!!input) {
-    return true;
-  } else {
-    return 'This file is required.';
-  }
-}
-
-function currentBranch(): string | undefined {
-  try {
-    return branch.sync();
-  } catch (e) {
-    return undefined;
-  }
-}
-
-async function replaceLatestWithAdEngineVersion(input: string) {
-  if (input !== 'latest') {
-    return input;
-  }
-
-  const response = await axios.get(
-    'https://raw.githubusercontent.com/Wikia/ad-engine/dev/package.json',
-  );
-
-  return `v${response.data.version}`;
-}

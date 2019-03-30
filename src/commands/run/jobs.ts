@@ -1,11 +1,11 @@
 import * as inquirer from 'inquirer';
-import { verifyList } from '../../utils/verify-list';
+import { filterList } from '../../utils/filter-list';
 
 export type Job = 'update' | 'deploy' | 'test';
 export const availableJobs: Job[] = ['update', 'deploy', 'test'];
 
 export async function verifyJobs(jobs: string[]): Promise<Job[]> {
-  return verifyList(jobs, availableJobs, () => askForFobs());
+  return filterList(jobs, availableJobs, () => askForFobs());
 }
 
 async function askForFobs(): Promise<Job[]> {
