@@ -20,9 +20,9 @@ export async function run(inputJobs: string[], inputProjects: string[], extended
   });
   console.log(queueNumber);
 
-  await new Promise(resolve => setTimeout(resolve, 5000));
+  await new Promise(resolve => setTimeout(resolve, 1000));
 
-  const item = await jenkins.queue.item(2052883);
+  const item = await jenkins.queue.item(queueNumber);
 
   console.log(item);
 
