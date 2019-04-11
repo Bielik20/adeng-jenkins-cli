@@ -1,3 +1,4 @@
+import { pessimisticThreshold } from '../utils';
 import { BuildResponse } from './build-response';
 import {
   getQueueItemRemainingDuration,
@@ -21,8 +22,7 @@ export interface JobResponse {
 export interface JobProgress extends JobResponse {
   status: 'PROGRESS';
   started: number;
-  duration: number;
-  remainingDuration: number;
+  estimatedEnd: number;
 }
 
 export function isJobProgress(input: JobResponse): input is JobProgress {
@@ -30,7 +30,7 @@ export function isJobProgress(input: JobResponse): input is JobProgress {
 }
 
 export interface JobDone extends JobResponse {
-  number: number;
+  id: number;
   status: 'FAILURE' | 'SUCCESS';
 }
 
@@ -66,7 +66,7 @@ export function jobResponseFromQueue(
     return {
       ...response,
       text: 'Item has started building',
-      number: queue.executable.number,
+      id: queue.executable.number,
       status: 'SUCCESS',
     } as JobDone;
   }
@@ -76,8 +76,7 @@ export function jobResponseFromQueue(
     text: isQueueItemQuiet(queue) ? 'Item in quiet state' : 'Item in the queue',
     status: 'PROGRESS',
     started: queue.inQueueSince,
-    duration: +new Date() - queue.inQueueSince,
-    remainingDuration: getQueueItemRemainingDuration(queue),
+    estimatedEnd: +new Date() + getQueueItemRemainingDuration(queue),
   } as JobProgress;
 }
 
@@ -93,8 +92,8 @@ export function jobResponseFromBuild(build: BuildResponse): JobResponse {
       text: 'Build in progress',
       status: 'PROGRESS',
       started: build.timestamp,
-      duration: +new Date() - build.timestamp,
-      remainingDuration: build.estimatedDuration + build.timestamp - +new Date(),
+      // TODO: If estimated end is past now create new estimated end
+      estimatedEnd: build.estimatedDuration + build.timestamp + pessimisticThreshold,
     } as JobProgress;
   }
 
@@ -102,7 +101,7 @@ export function jobResponseFromBuild(build: BuildResponse): JobResponse {
     return {
       ...response,
       text: 'Build finished',
-      number: build.number,
+      id: build.number,
       status: 'SUCCESS',
     } as JobDone;
   }
@@ -112,4 +111,33 @@ export function jobResponseFromBuild(build: BuildResponse): JobResponse {
     text: `Build failed with response: ${build.result}`,
     status: 'FAILURE',
   } as JobDone;
+}
+
+export function getJobProgressPercentage(response: JobProgress): number {
+  const duration = getJobProgressEstimatedDuration(response);
+  const elapsed = getJobProgressElapsedTime(response);
+
+  return elapsed / duration;
+}
+
+export function getJobProgressEstimatedRemainingTime(response: JobProgress): number {
+  const remaining = response.estimatedEnd - +new Date();
+
+  return zeroGuard(remaining);
+}
+
+export function getJobProgressEstimatedDuration(response: JobProgress): number {
+  const duration = response.estimatedEnd - response.started;
+
+  return zeroGuard(duration);
+}
+
+export function getJobProgressElapsedTime(response: JobProgress): number {
+  const elapsed = +new Date() - response.started;
+
+  return zeroGuard(elapsed);
+}
+
+function zeroGuard(input: number): number {
+  return input > 0 ? input : 0;
 }

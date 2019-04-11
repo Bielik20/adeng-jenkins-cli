@@ -3,13 +3,14 @@ import { from, Observable, of } from 'rxjs';
 import { shareReplay, switchMap, takeUntil } from 'rxjs/operators';
 import { Subscriber } from 'rxjs/src/internal/Subscriber';
 import {
+  getJobProgressEstimatedRemainingTime,
   isJobDone,
   JobDone,
   JobProgress,
   JobResponse,
   jobResponseFromBuild,
   jobResponseFromQueue,
-} from '../models/job-response';
+} from '../models';
 import { delay, processInterrupt$ } from '../utils';
 
 export class JenkinsRxJs {
@@ -21,7 +22,7 @@ export class JenkinsRxJs {
         this.queue(queueNumber).pipe(
           switchMap((response: JobResponse) => {
             if (isJobDone(response)) {
-              return this.build(response.name, response.number);
+              return this.build(response.name, response.id);
             }
 
             return of(response);
@@ -57,7 +58,7 @@ export class JenkinsRxJs {
             return;
           }
 
-          await delay((parserResult as JobProgress).remainingDuration);
+          await delay(getJobProgressEstimatedRemainingTime(parserResult as JobProgress));
         }
       } catch (e) {
         console.log(e);
@@ -75,7 +76,7 @@ export class JenkinsRxJs {
       name: 'JOB',
       url: '',
       text: 'Unexpected error occurred',
-      number: 0,
+      id: 0,
       status: 'FAILURE',
     };
   }

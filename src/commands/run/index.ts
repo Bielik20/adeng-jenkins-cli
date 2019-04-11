@@ -4,9 +4,14 @@ import * as createJenkins from 'jenkins';
 import * as MultiProgress from 'multi-progress';
 import { combineLatest, interval } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { JenkinsRxJs } from '../../jenkins-rxjs';
-import { isJobDone, isJobProgress } from '../../jenkins-rxjs/models/job-response';
-import { getProgressInfo } from '../../jenkins-rxjs/utils';
+import {
+  getJobProgressEstimatedRemainingTime,
+  getJobProgressPercentage,
+  isJobDone,
+  isJobProgress,
+  JenkinsRxJs,
+} from '../../jenkins-rxjs';
+import { millisecondsToDisplay } from '../../utils/milliseconds-to-display';
 import { store } from '../../utils/store';
 import { ensureAuthenticated } from '../login';
 import { Job, verifyJobs } from './jobs';
@@ -17,7 +22,6 @@ export async function run(inputJobs: string[], inputProjects: string[], extended
   await ensureAuthenticated();
   // questionnaire(inputJobs, inputProjects, extended);
   runJenkins();
-  // ui();
 }
 
 async function questionnaire(inputJobs: string[], inputProjects: string[], extended: boolean) {
@@ -52,10 +56,9 @@ function runJenkins() {
     .pipe(map(([response]) => response))
     .subscribe(response => {
       if (isJobProgress(response)) {
-        const progressInfo = getProgressInfo(response);
-        bar.update(progressInfo.progress, {
+        bar.update(getJobProgressPercentage(response), {
           text: response.text,
-          remaining: progressInfo.remaining,
+          remaining: millisecondsToDisplay(getJobProgressEstimatedRemainingTime(response)),
         });
       } else if (isJobDone(response)) {
         if (response.status === 'SUCCESS') {
