@@ -12,6 +12,22 @@ export class Store {
   set sandbox(input: Sandbox) {
     this.state.set('sandbox', input);
   }
+
+  get username(): string {
+    return this.state.get('username');
+  }
+
+  set username(input: string) {
+    this.state.set('username', input);
+  }
+
+  get token(): string {
+    return this.state.get('token');
+  }
+
+  set token(input: string) {
+    this.state.set('token', input);
+  }
 }
 
 export const store = new Store();
