@@ -2,22 +2,16 @@ import { pessimisticThreshold } from '../utils';
 
 export interface QueueItem {
   _class: string;
-  actions: ActionsEntity[];
   blocked: boolean;
   buildable: boolean;
   id: number;
   inQueueSince: number;
   params: string;
-  stuck: boolean;
   task: Task;
   url: string;
   estimatedDuration: number;
-}
-
-export interface ActionsEntity {
-  _class: string;
-  parameters?: any[];
-  causes?: any[];
+  stuck: boolean;
+  cancelled: boolean;
 }
 
 export interface Task {
@@ -60,7 +54,7 @@ export function isQueueItemDone(response: QueueItem): response is QueueItemDone 
   return !!(response as QueueItemDone).executable;
 }
 
-export function getQueueItemEstimatedDuration(response: QueueItem): number {
+export function getQueueItemRemainingDuration(response: QueueItem): number {
   let milliseconds = 0;
 
   if (isQueueItemQuiet(response)) {
