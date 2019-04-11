@@ -1,5 +1,6 @@
 import * as inquirer from 'inquirer';
 import * as createJenkins from 'jenkins';
+import { JenkinsRxJs } from '../../jenkins-rxjs';
 import { store } from '../../utils/store';
 import { ensureAuthenticated } from '../login';
 import { Job, verifyJobs } from './jobs';
@@ -20,11 +21,15 @@ export async function run(inputJobs: string[], inputProjects: string[], extended
   });
   console.log(queueNumber);
 
-  await new Promise(resolve => setTimeout(resolve, 1000));
+  const jenkinsRxJs = new JenkinsRxJs(
+    `http://${store.username}:${store.token}@jenkins.wikia-prod:8080`,
+  );
 
-  const item = await jenkins.queue.item(queueNumber);
+  const { quiet, queued, done } = jenkinsRxJs.queue.item(queueNumber);
 
-  console.log(item);
+  quiet.subscribe(x => console.log('QUIET\n', x));
+  queued.subscribe(x => console.log('QUEUED\n', x));
+  done.subscribe(x => console.log('EXECUTED\n', x));
 
   return;
 
