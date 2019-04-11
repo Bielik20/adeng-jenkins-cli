@@ -29,7 +29,19 @@ export async function run(inputJobs: string[], inputProjects: string[], extended
 
   quiet.subscribe(x => console.log('QUIET\n', x));
   queued.subscribe(x => console.log('QUEUED\n', x));
-  done.subscribe(x => console.log('EXECUTED\n', x));
+  done.subscribe(async x => {
+    console.log('EXECUTED\n', x);
+
+    const get = await jenkins.build.get(x.task.name, x.executable.number);
+    const log = await jenkins.build.log(x.task.name, x.executable.number);
+    const logStream = await jenkins.build.logStream(x.task.name, x.executable.number);
+
+    console.log('get', get);
+    console.log('\n==========\n');
+    console.log('log', log);
+    console.log('\n==========\n');
+    console.log('logStream', logStream);
+  });
 
   return;
 

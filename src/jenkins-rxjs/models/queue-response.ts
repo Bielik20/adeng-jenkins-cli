@@ -11,7 +11,7 @@ export interface QueueItem {
   stuck: boolean;
   task: Task;
   url: string;
-  remainingMilliseconds: number;
+  estimatedDuration: number;
 }
 
 export interface ActionsEntity {
@@ -60,13 +60,13 @@ export function isQueueItemDone(response: QueueItem): response is QueueItemDone 
   return !!(response as QueueItemDone).executable;
 }
 
-export function getQueueItemRemainingTime(response: QueueItem): number {
+export function getQueueItemEstimatedDuration(response: QueueItem): number {
   let milliseconds = 0;
 
   if (isQueueItemQuiet(response)) {
     milliseconds = response.timestamp - +new Date();
   } else if (isQueueItemQueued(response)) {
-    milliseconds = parseQueuedRemainingTime(response.why);
+    milliseconds = parseQueuedEstimatedDuration(response.why);
   }
 
   if (milliseconds < 0) {
@@ -76,7 +76,7 @@ export function getQueueItemRemainingTime(response: QueueItem): number {
   return milliseconds + pessimisticThreshold;
 }
 
-function parseQueuedRemainingTime(why: string): number {
+function parseQueuedEstimatedDuration(why: string): number {
   let milliseconds = 0;
 
   const startIndex = why.indexOf('(ETA:');
