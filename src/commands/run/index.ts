@@ -1,9 +1,12 @@
 import chalk from 'chalk';
 import * as inquirer from 'inquirer';
 import * as createJenkins from 'jenkins';
+import * as MultiProgress from 'multi-progress';
+import { combineLatest, interval } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { JenkinsRxJs } from '../../jenkins-rxjs';
 import { isJobDone, isJobProgress } from '../../jenkins-rxjs/models/job-response';
-import { displayTime } from '../../jenkins-rxjs/utils';
+import { getProgressInfo } from '../../jenkins-rxjs/utils';
 import { store } from '../../utils/store';
 import { ensureAuthenticated } from '../login';
 import { Job, verifyJobs } from './jobs';
@@ -13,7 +16,8 @@ import { getQuestions, QuestionsResult } from './questions';
 export async function run(inputJobs: string[], inputProjects: string[], extended: boolean) {
   await ensureAuthenticated();
   // questionnaire(inputJobs, inputProjects, extended);
-  // runJenkins();
+  runJenkins();
+  // ui();
 }
 
 async function questionnaire(inputJobs: string[], inputProjects: string[], extended: boolean) {
@@ -36,16 +40,36 @@ function runJenkins() {
     parameters: { branch: 'jenkins-test', adengine_version: 'jenkins-test' },
   };
 
-  jenkinsRxJs.job(opts).subscribe(response => {
-    if (isJobProgress(response)) {
-      console.log(chalk.yellow(response.text));
-      console.log(chalk.bgBlue(displayTime(response)));
-    } else if (isJobDone(response)) {
-      if (response.status === 'SUCCESS') {
-        console.log(chalk.yellow(response.text));
-      } else {
-        console.log(chalk.red(response.text));
-      }
-    }
+  const multi = new MultiProgress(process.stderr);
+  const bar = multi.newBar('MobileWiki [:bar] :percent :remaining (:text)', {
+    complete: chalk.green('='),
+    incomplete: ' ',
+    width: 30,
+    total: 100,
   });
+
+  combineLatest(jenkinsRxJs.job(opts), interval(500))
+    .pipe(map(([response]) => response))
+    .subscribe(response => {
+      if (isJobProgress(response)) {
+        const progressInfo = getProgressInfo(response);
+        bar.update(progressInfo.progress, {
+          text: response.text,
+          remaining: progressInfo.remaining,
+        });
+      } else if (isJobDone(response)) {
+        if (response.status === 'SUCCESS') {
+          bar.update(1, {
+            text: chalk.green('Completed'),
+            remaining: '',
+          });
+        } else {
+          bar.update(1, {
+            text: chalk.red('Failed'),
+            remaining: '',
+          });
+        }
+        // TODO: Should complete here
+      }
+    });
 }

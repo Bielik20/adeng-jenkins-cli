@@ -1,11 +1,20 @@
 import { JobProgress } from '../models/job-response';
 
-export function displayDuration(milliseconds: number): string {
+export function displayRemaining(milliseconds: number): string {
   const minutes: number = Math.floor(milliseconds / 60000);
   const seconds: number = +((milliseconds % 60000) / 1000).toFixed(0);
-  return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+  return minutes + ' min' + (seconds < 1 ? '' : ` ${seconds} sec`);
 }
 
-export function displayTime(response: JobProgress): string {
-  return displayDuration(response.remainingDuration);
+export function getProgressInfo(response: JobProgress) {
+  const now = +new Date();
+  const end = response.started + response.duration + response.remainingDuration;
+  const progress = (now - response.started) / (response.duration + response.remainingDuration);
+  const remaining = end - now;
+  const remainingMessage = displayRemaining(remaining > 0 ? remaining : 0);
+
+  return {
+    progress,
+    remaining: remainingMessage,
+  };
 }
