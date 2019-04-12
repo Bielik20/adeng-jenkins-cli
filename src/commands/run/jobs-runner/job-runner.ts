@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import * as MultiProgress from 'multi-progress';
 import { Observable } from 'rxjs';
-import { last, map, tap } from 'rxjs/operators';
+import { last, tap } from 'rxjs/operators';
 
 import {
   getJobProgressEstimatedRemainingTime,
