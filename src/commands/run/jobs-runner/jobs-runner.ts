@@ -16,7 +16,6 @@ export class JobsRunner {
     for (const input of inputs) {
       const results: JobDone[] = await Promise.all(this.runJobProjects(input));
 
-      console.log('\n', results);
       this.ensureSuccess(results);
     }
   }
