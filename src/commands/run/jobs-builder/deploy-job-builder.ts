@@ -2,7 +2,7 @@ import { ParamsResult } from '../param-questions';
 import { Project } from '../project-questions';
 import { JobBuildDescriber } from './job-builder-result';
 
-interface DeployJoAppParams {
+interface DeployJobAppParams {
   sandbox: string;
   app_branch: string;
   config_branch: string;
@@ -43,7 +43,7 @@ export class DeployJobBuilder {
   private mapProjectParams(
     project: Project,
     input: ParamsResult,
-  ): DeployJoAppParams | DeployJobMobileWikiParams {
+  ): DeployJobAppParams | DeployJobMobileWikiParams {
     switch (project) {
       case 'app':
         return {

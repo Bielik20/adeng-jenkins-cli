@@ -18,7 +18,7 @@ export class JenkinsRxJs {
 
   job(opts: JobBuildOptions): Observable<JobResponse> {
     return from(this.jenkins.job.build(opts)).pipe(
-      switchMap(queueNumber =>
+      switchMap((queueNumber: number) =>
         this.queue(queueNumber).pipe(
           switchMap((response: JobResponse) => {
             if (isJobDone(response)) {

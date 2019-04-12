@@ -17,13 +17,15 @@ export class UpdateJobBuilder {
   build(projects: Project[], params: ParamsResult): JobBuildDescriber[] {
     const parameters: UpdateJobParams = this.mapProjectParams(params);
 
-    return projects.map((project: Project) => ({
-      displayName: project,
-      opts: {
-        name: this.mapProjectName(project),
-        parameters,
-      },
-    }));
+    return projects
+      .filter(project => this.projectNameMap.has(project))
+      .map((project: Project) => ({
+        displayName: project,
+        opts: {
+          name: this.mapProjectName(project),
+          parameters,
+        },
+      }));
   }
 
   private mapProjectName(input: Project): string {

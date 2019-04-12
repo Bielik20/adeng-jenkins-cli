@@ -15,7 +15,7 @@ import { millisecondsToDisplay } from '../../utils/milliseconds-to-display';
 import { store } from '../../utils/store';
 import { ensureAuthenticated } from '../login';
 import { Job, verifyJobs } from './job-questions';
-import { JobsBuilder } from './jobs/jobs-builder';
+import { JobsBuilder } from './jobs-builder';
 import { getParamQuestions, ParamsResult } from './param-questions';
 import { Project, verifyProjects } from './project-questions';
 
@@ -28,9 +28,12 @@ export async function run(inputJobs: string[], inputProjects: string[], extended
 async function questionnaire(inputJobs: string[], inputProjects: string[], extended: boolean) {
   const jobs: Job[] = await verifyJobs(inputJobs);
   const projects: Project[] = await verifyProjects(inputProjects);
-  const paramQuestions = getParamQuestions(jobs, projects, extended);
 
+  // TODO: Make so that instead of calling `getParamQuestions` one should call some kind of
+  // inquirer.prompt which would return result with default values for questions not asked
+  const paramQuestions = getParamQuestions(jobs, projects, extended);
   const result: ParamsResult = await inquirer.prompt<ParamsResult>(paramQuestions);
+
   console.log(result);
 
   const builder = new JobsBuilder();
