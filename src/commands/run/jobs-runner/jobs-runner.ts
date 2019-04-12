@@ -16,7 +16,7 @@ export class JobsRunner {
     for (const input of inputs) {
       const results: JobDone[] = await Promise.all(this.runJobProjects(input));
 
-      console.log(results);
+      console.log('\n', results);
       this.ensureSuccess(results);
     }
   }
@@ -25,11 +25,10 @@ export class JobsRunner {
     const failures = results.filter((result: JobDone) => result.status === 'FAILURE');
 
     if (failures.length) {
-      console.log(chalk.red('Error: '), 'One or more jobs has failed with message:');
+      console.log('\n', chalk.red('Error: '), 'One or more jobs has failed with message:');
       failures.forEach((failure: JobDone) => console.log(`- ${failure.text}`));
+      process.exit(1);
     }
-
-    process.exit(1);
   }
 
   private runJobProjects(input: JobBuilderResult): Promise<JobDone>[] {
