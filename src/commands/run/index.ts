@@ -11,6 +11,7 @@ import {
   isJobProgress,
   JenkinsRxJs,
 } from '../../jenkins-rxjs';
+import { Jenkins } from '../../utils/jenkins';
 import { millisecondsToDisplay } from '../../utils/milliseconds-to-display';
 import { store } from '../../utils/store';
 import { ensureAuthenticated } from '../login';
@@ -21,7 +22,6 @@ import { getParamQuestions, ParamsResult } from './param-questions';
 import { Project, verifyProjects } from './project-questions';
 
 export async function run(inputJobs: string[], inputProjects: string[], extended: boolean) {
-  await ensureAuthenticated();
   questionnaire(inputJobs, inputProjects, extended);
   // runJenkins();
 }
@@ -41,22 +41,14 @@ async function questionnaire(inputJobs: string[], inputProjects: string[], exten
   const builderResult = builder.build(jobs, projects, result);
   console.log(JSON.stringify(builderResult, null, 2));
 
-  const jenkins = createJenkins({
-    baseUrl: `http://${store.username}:${store.token}@jenkins.wikia-prod:8080`,
-    promisify: true,
-  });
-  const jenkinsRxJs = new JenkinsRxJs(jenkins);
+  const jenkinsRxJs = await Jenkins.getJenkinsRxJs();
   const runner = new JobsRunner(jenkinsRxJs);
 
   await runner.runJobs(builderResult);
 }
 
-function runJenkins() {
-  const jenkins = createJenkins({
-    baseUrl: `http://${store.username}:${store.token}@jenkins.wikia-prod:8080`,
-    promisify: true,
-  });
-  const jenkinsRxJs = new JenkinsRxJs(jenkins);
+async function runJenkins() {
+  const jenkinsRxJs = await Jenkins.getJenkinsRxJs();
   const opts = {
     name: 'update_dependencies_mobilewiki',
     parameters: { branch: 'jenkins-test', adengine_version: 'jenkins-test' },
