@@ -1,3 +1,4 @@
+import * as ansiEscapes from 'ansi-escapes';
 import chalk from 'chalk';
 import * as MultiProgress from 'multi-progress';
 import { JenkinsRxJs, JobDone } from '../../../jenkins-rxjs';
@@ -14,7 +15,13 @@ export class JobsRunner {
 
   async runJobs(inputs: JobBuilderResult[]): Promise<void> {
     for (const input of inputs) {
+      process.stdout.write(ansiEscapes.cursorSavePosition);
+
       const results: JobDone[] = await Promise.all(this.runJobProjects(input));
+
+      process.stdout.write(ansiEscapes.cursorRestorePosition);
+      process.stdout.write(ansiEscapes.cursorDown(results.length + 1));
+      process.stdout.write(ansiEscapes.cursorLeft);
 
       this.ensureSuccess(results);
     }
@@ -24,7 +31,7 @@ export class JobsRunner {
     const failures = results.filter((result: JobDone) => result.status === 'FAILURE');
 
     if (failures.length) {
-      console.log('\n', chalk.red('Error: '), 'One or more jobs has failed with message:');
+      console.log(chalk.red('Error: '), 'One or more jobs has failed with message:');
       failures.forEach((failure: JobDone) => console.log(`- ${failure.text}`));
       process.exit(1);
     }

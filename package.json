@@ -22,6 +22,7 @@
     "postinstall": "npm run build"
   },
   "dependencies": {
+    "ansi-escapes": "^4.1.0",
     "axios": "^0.18.0",
     "chalk": "^2.4.2",
     "clear": "^0.1.0",
