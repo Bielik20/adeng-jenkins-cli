@@ -55,6 +55,7 @@ export class JobRunner {
             });
           }
 
+          bar.terminate();
           subscription.unsubscribe();
         }
       });

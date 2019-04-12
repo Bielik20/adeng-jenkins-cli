@@ -16,7 +16,7 @@ export class TestJobBuilder {
   private projectNameMap = new Map<Project, string>([
     ['app', 'ads-app-preview'],
     ['mobile-wiki', 'ads-mobile-wiki-preview'],
-    ['f2', 'news-and-stories-preview'],
+    ['f2', 'ads-news-and-stories'],
   ]);
 
   build(projects: Project[], params: ParamsResult): JobBuildDescriber[] {
