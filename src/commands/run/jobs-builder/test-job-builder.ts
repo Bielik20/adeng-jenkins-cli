@@ -1,4 +1,4 @@
-import { ParamsResult } from '../param-questions';
+import { ParamsResult } from '../param-questions.model';
 import { Project } from '../project-questions';
 import { JobBuildDescriber } from './job-builder-result';
 
@@ -16,7 +16,7 @@ export class TestJobBuilder {
   private projectNameMap = new Map<Project, string>([
     ['app', 'ads-app-preview'],
     ['mobile-wiki', 'ads-mobile-wiki-preview'],
-    ['f2', 'news-and-stories-preview'],
+    ['f2', 'ads-news-and-stories'],
   ]);
 
   build(projects: Project[], params: ParamsResult): JobBuildDescriber[] {
@@ -36,7 +36,7 @@ export class TestJobBuilder {
       env: params.sandbox,
       branch: params.testBranch,
       qs: params.query,
-      'fandom-env': params.fandomEnvironment || 'sandbox-adeng',
+      'fandom-env': params.fandomEnvironment,
       extension: params.extension,
       'custom-name': params.name,
       'tabs-to-trigger': this.mapTagsToTrigger(projects),

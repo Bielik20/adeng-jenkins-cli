@@ -22,6 +22,7 @@
     ],
     "interface-name": [true, "never-prefix"],
     "member-access": [true, "no-public"],
+    "array-type": [true, "array"],
     "no-console": false,
     "no-var-requires": false,
     "no-unused-expression": false,

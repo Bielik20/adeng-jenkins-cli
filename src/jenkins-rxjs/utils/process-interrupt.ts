@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs';
+import { shareReplay } from 'rxjs/operators';
 import { Subscriber } from 'rxjs/src/internal/Subscriber';
 
 export const processInterrupt$ = Observable.create((observer: Subscriber<void>) => {
@@ -27,4 +28,4 @@ export const processInterrupt$ = Observable.create((observer: Subscriber<void>) 
     console.log('Uncaught Exception');
     process.exit(1);
   });
-});
+}).pipe(shareReplay(1));

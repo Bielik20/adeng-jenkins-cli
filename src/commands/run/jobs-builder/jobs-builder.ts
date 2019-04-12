@@ -1,5 +1,5 @@
 import { Job } from '../job-questions';
-import { ParamsResult } from '../param-questions';
+import { ParamsResult } from '../param-questions.model';
 import { Project } from '../project-questions';
 import { DeployJobBuilder } from './deploy-job-builder';
 import { JobBuilderResult } from './job-builder-result';

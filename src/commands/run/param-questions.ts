@@ -1,14 +1,15 @@
 import * as inquirer from 'inquirer';
+import { sandboxes } from '../../utils/sandbox';
+import { store } from '../../utils/store';
+import { Job } from './job-questions';
+import { ParamsResult } from './param-questions.model';
+import { availableProjects, Project } from './project-questions';
 import {
   adenToUpper,
   currentBranch,
   replaceLatestWithAdEngineVersion,
   requiredInput,
-} from '../../utils/question-helpers';
-import { sandboxes } from '../../utils/sandbox';
-import { store } from '../../utils/store';
-import { Job } from './job-questions';
-import { availableProjects, Project } from './project-questions';
+} from './question-helpers';
 
 interface FilterParamQuestion extends inquirer.Question {
   name: keyof ParamsResult;
@@ -19,22 +20,23 @@ interface FilterParamQuestion extends inquirer.Question {
   };
 }
 
-export interface ParamsResult {
-  branch?: string;
-  adEngineVersion?: string;
-  sandbox?: string;
-  configBranch?: string;
-  datacenter?: string;
-  crowdinBranch?: string;
-  debug?: boolean;
-  testBranch?: string;
-  query?: string;
-  fandomEnvironment?: string;
-  extension?: string;
-  name?: string;
+export async function promptParams(
+  jobs: Job[],
+  projects: Project[],
+  extended: boolean,
+): Promise<ParamsResult> {
+  const paramQuestions: inquirer.Questions = getParamQuestions(jobs, projects, extended);
+  const result: ParamsResult = await inquirer.prompt<ParamsResult>(paramQuestions);
+
+  result.datacenter = result.datacenter || 'sjc';
+  result.debug = result.debug || false;
+  result.fandomEnvironment = result.fandomEnvironment || 'sandbox-adeng';
+  result.configBranch = result.configBranch || 'dev';
+
+  return result;
 }
 
-export function getParamQuestions(
+function getParamQuestions(
   jobs: Job[],
   projects: Project[],
   extended: boolean,
@@ -90,6 +92,7 @@ const questions: FilterParamQuestion[] = [
   {
     name: 'configBranch',
     message: 'Config branch e.g. release-01, PLAT-345',
+    default: 'dev',
     destined: {
       jobs: ['update'],
       projects: ['app'],

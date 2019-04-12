@@ -1,6 +1,6 @@
 import * as inquirer from 'inquirer';
-import { requiredInput } from '../../utils/question-helpers';
 import { store } from '../../utils/store';
+import { requiredInput } from '../run/question-helpers';
 
 export async function login() {
   const { username, token } = await inquirer.prompt<{ username: string; token: string }>(questions);

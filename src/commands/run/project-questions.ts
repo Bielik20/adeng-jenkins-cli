@@ -26,5 +26,6 @@ async function askForProjects(): Promise<Project[]> {
     },
   ];
   const result: any = await inquirer.prompt(questions);
+
   return result.projects;
 }

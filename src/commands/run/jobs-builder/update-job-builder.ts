@@ -1,4 +1,4 @@
-import { ParamsResult } from '../param-questions';
+import { ParamsResult } from '../param-questions.model';
 import { Project } from '../project-questions';
 import { JobBuildDescriber } from './job-builder-result';
 

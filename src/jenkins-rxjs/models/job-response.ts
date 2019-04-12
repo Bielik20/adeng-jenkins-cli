@@ -1,4 +1,4 @@
-import { pessimisticThreshold } from '../utils';
+import { overestimeThreshold, pessimisticThreshold } from '../utils';
 import { BuildResponse } from './build-response';
 import {
   getQueueItemRemainingDuration,
@@ -12,14 +12,16 @@ import {
 
 export type JobStatus = 'FAILURE' | 'SUCCESS' | 'PROGRESS';
 
-export interface JobResponse {
+export type JobResponse = JobProgress | JobDone;
+
+interface JobResponseBase {
   name: string;
   url: string;
   text: string;
   status: JobStatus;
 }
 
-export interface JobProgress extends JobResponse {
+export interface JobProgress extends JobResponseBase {
   status: 'PROGRESS';
   started: number;
   estimatedEnd: number;
@@ -29,7 +31,7 @@ export function isJobProgress(input: JobResponse): input is JobProgress {
   return input.status === 'PROGRESS';
 }
 
-export interface JobDone extends JobResponse {
+export interface JobDone extends JobResponseBase {
   id: number;
   status: 'FAILURE' | 'SUCCESS';
 }
@@ -82,18 +84,22 @@ export function jobResponseFromQueue(
 
 export function jobResponseFromBuild(build: BuildResponse): JobResponse {
   const response = {
-    name: build.displayName,
+    name: build.fullDisplayName,
     url: build.url,
   };
 
   if (!build.duration) {
+    const estimatedEnd = build.estimatedDuration + build.timestamp;
+
     return {
       ...response,
       text: 'Build in progress',
       status: 'PROGRESS',
       started: build.timestamp,
-      // TODO: If estimated end is past now create new estimated end
-      estimatedEnd: build.estimatedDuration + build.timestamp + pessimisticThreshold,
+      estimatedEnd:
+        estimatedEnd > +new Date()
+          ? estimatedEnd + pessimisticThreshold
+          : +new Date() + overestimeThreshold,
     } as JobProgress;
   }
 

@@ -1,4 +1,4 @@
-import { ParamsResult } from '../param-questions';
+import { ParamsResult } from '../param-questions.model';
 import { Project } from '../project-questions';
 import { JobBuildDescriber } from './job-builder-result';
 
@@ -50,16 +50,16 @@ export class DeployJobBuilder {
           sandbox: input.sandbox,
           app_branch: input.branch,
           config_branch: input.configBranch,
-          datacenter: input.datacenter || 'sjc',
+          datacenter: input.datacenter,
           crowdin_branch: input.crowdinBranch,
-          debug: input.debug || false,
+          debug: input.debug,
         };
 
       case 'mobile-wiki':
         return {
           sandbox: input.sandbox,
           branch: input.branch,
-          dc: input.datacenter || 'sjc',
+          dc: input.datacenter,
           crowdin_branch: input.crowdinBranch,
         };
     }

@@ -25,5 +25,6 @@ async function askForFobs(): Promise<Job[]> {
     },
   ];
   const result: any = await inquirer.prompt(questions);
+
   return result.jobs;
 }
