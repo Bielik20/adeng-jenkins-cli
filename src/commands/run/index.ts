@@ -1,4 +1,6 @@
 import * as ansiEscapes from 'ansi-escapes';
+import * as boxen from 'boxen';
+import { BorderStyle } from 'boxen';
 import chalk from 'chalk';
 import * as logSymbols from 'log-symbols';
 import * as MultiProgress from 'multi-progress';
@@ -26,10 +28,9 @@ import { ParamsResult } from './param-questions.model';
 import { Project, verifyProjects } from './project-questions';
 
 export async function run(inputJobs: string[], inputProjects: string[], extended: boolean) {
-  // await uiTest();
-  // await uiTest();
-  // await uiTest();
-  questionnaire(inputJobs, inputProjects, extended);
+  await uiTest();
+  await uiTest();
+  // questionnaire(inputJobs, inputProjects, extended);
 }
 
 async function questionnaire(inputJobs: string[], inputProjects: string[], extended: boolean) {
@@ -60,7 +61,12 @@ async function uiTest() {
     createStream(4000),
   ];
 
-  console.log(chalk.bgCyan(`======JOB======`));
+  console.log(
+    boxen('Job', {
+      padding: { left: 1, right: 1, bottom: 0, top: 0 },
+      borderStyle: BorderStyle.Round,
+    }),
+  );
   process.stdout.write(ansiEscapes.cursorSavePosition);
   process.stdout.write(ansiEscapes.cursorHide);
 

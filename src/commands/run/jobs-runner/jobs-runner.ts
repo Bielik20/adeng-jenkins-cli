@@ -1,4 +1,6 @@
 import * as ansiEscapes from 'ansi-escapes';
+import * as boxen from 'boxen';
+import { BorderStyle } from 'boxen';
 import chalk from 'chalk';
 import * as MultiProgress from 'multi-progress';
 import { JenkinsRxJs, JobDone } from '../../../jenkins-rxjs';
@@ -14,7 +16,12 @@ export class JobsRunner {
 
   async runJobs(inputs: JobBuilderResult[]): Promise<void> {
     for (const input of inputs) {
-      console.log(chalk.bgCyan(`======${input.displayName}======`));
+      console.log(
+        boxen(input.displayName, {
+          padding: { left: 1, right: 1, bottom: 0, top: 0 },
+          borderStyle: BorderStyle.Round,
+        }),
+      );
       process.stdout.write(ansiEscapes.cursorSavePosition);
       process.stdout.write(ansiEscapes.cursorHide);
 
