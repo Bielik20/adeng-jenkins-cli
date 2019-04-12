@@ -2,7 +2,8 @@ import * as ansiEscapes from 'ansi-escapes';
 import chalk from 'chalk';
 import * as logSymbols from 'log-symbols';
 import * as MultiProgress from 'multi-progress';
-import { combineLatest, interval, Observable } from 'rxjs';
+import { combineLatest, interval, Observable, Subject } from 'rxjs';
+import { tap } from 'rxjs/internal/operators/tap';
 import { last, map, shareReplay, takeUntil } from 'rxjs/operators';
 import {
   getJobProgressEstimatedRemainingTime,
@@ -24,11 +25,11 @@ import { promptParams } from './param-questions';
 import { ParamsResult } from './param-questions.model';
 import { Project, verifyProjects } from './project-questions';
 
-const multi = new MultiProgress(process.stderr);
-
 export async function run(inputJobs: string[], inputProjects: string[], extended: boolean) {
-  // await uiTest();
-  questionnaire(inputJobs, inputProjects, extended);
+  await uiTest();
+  await delay(5000);
+  await uiTest();
+  // questionnaire(inputJobs, inputProjects, extended);
 }
 
 async function questionnaire(inputJobs: string[], inputProjects: string[], extended: boolean) {
@@ -36,8 +37,7 @@ async function questionnaire(inputJobs: string[], inputProjects: string[], exten
   const projects: Project[] = await verifyProjects(inputProjects);
   const params: ParamsResult = await promptParams(jobs, projects, extended);
 
-  process.stdout.write(ansiEscapes.cursorDown(1));
-  process.stdout.write(ansiEscapes.cursorLeft);
+  process.stdout.write(ansiEscapes.cursorDown(1) + ansiEscapes.cursorLeft);
 
   const builder = new JobsBuilder();
   const builderResult = builder.build(jobs, projects, params);
@@ -48,36 +48,42 @@ async function questionnaire(inputJobs: string[], inputProjects: string[], exten
 }
 
 async function uiTest() {
+  const multi = new MultiProgress(process.stderr);
   const build: any = {
     displayName: 'test',
   };
 
-  const streams = [createStream(3000), createStream(4000), createStream(2500), createStream(1000)];
-
+  console.log('a');
   process.stdout.write(ansiEscapes.cursorSavePosition);
-  process.stdout.write(ansiEscapes.cursorHide);
+  await delay(1000);
+  // process.stdout.write(ansiEscapes.cursorHide);
 
-  streams.forEach(s => display(build, s));
-
-  const array = await Promise.all(streams.map(s => s.pipe(last()).toPromise()));
+  const streams = [createStream(3000), createStream(4000), createStream(2500), createStream(1000)];
+  const promises = streams.map(s =>
+    display(build, s, multi)
+      .pipe(last())
+      .toPromise(),
+  );
+  const array = await Promise.all(promises);
 
   process.stdout.write(ansiEscapes.cursorRestorePosition);
-  process.stdout.write(ansiEscapes.cursorDown(array.length + 1));
-  process.stdout.write(ansiEscapes.cursorLeft);
+  await delay(1000);
+  process.stdout.write(ansiEscapes.cursorDown(array.length + 1) + ansiEscapes.cursorLeft);
   // process.stdout.write(ansiEscapes.cursorShow);
+  // console.log(ansiEscapes.cursorGetPosition);
 
   console.log('aaa');
 }
 
-function display(build: JobBuildDescriber, stream$: Observable<JobResponse>): void {
-  const bar: ProgressBar = createBar(build);
+function display(build: JobBuildDescriber, stream$: Observable<JobResponse>, multi) {
+  const bar: ProgressBar = createBar(build, multi);
+  const end$ = new Subject();
 
-  const subscription = combineLatest(stream$, interval(1000))
-    .pipe(
-      map(([response]) => response),
-      takeUntil(processInterrupt$),
-    )
-    .subscribe((response: JobResponse) => {
+  return combineLatest(stream$, interval(1000)).pipe(
+    map(([response]) => response),
+    takeUntil(processInterrupt$),
+    takeUntil(end$.pipe(takeUntil(processInterrupt$))),
+    tap((response: JobResponse) => {
       if (isJobProgress(response)) {
         bar.update(getJobProgressPercentage(response), {
           text: response.text,
@@ -97,12 +103,14 @@ function display(build: JobBuildDescriber, stream$: Observable<JobResponse>): vo
         }
 
         bar.terminate();
-        subscription.unsubscribe();
+        end$.next();
+        end$.complete();
       }
-    });
+    }),
+  );
 }
 
-function createBar(build: JobBuildDescriber): ProgressBar {
+function createBar(build: JobBuildDescriber, multi): ProgressBar {
   return multi.newBar(`${build.displayName} [:bar] :percent :remaining (:text)`, {
     complete: chalk.green('='),
     incomplete: ' ',
