@@ -72,6 +72,7 @@ export class JenkinsRxJs {
   }
 
   private getErrorJobResponse(): JobDone {
+    // TODO: declare parserResult outside try so that you have access to it here
     return {
       name: 'JOB',
       url: '',

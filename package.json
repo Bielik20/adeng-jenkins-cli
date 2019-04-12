@@ -22,7 +22,9 @@
     "postinstall": "npm run build"
   },
   "dependencies": {
+    "ansi-escapes": "^4.1.0",
     "axios": "^0.18.0",
+    "boxen": "^3.1.0",
     "chalk": "^2.4.2",
     "clear": "^0.1.0",
     "clui": "^0.3.6",
@@ -32,6 +34,7 @@
     "git-branch": "^2.0.1",
     "inquirer": "^6.2.2",
     "jenkins": "^0.25.0",
+    "log-symbols": "^2.2.0",
     "minimist": "^1.2.0",
     "multi-progress": "^2.0.0",
     "rxjs": "^6.4.0"

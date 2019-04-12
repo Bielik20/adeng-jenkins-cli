@@ -1,7 +1,9 @@
 import chalk from 'chalk';
+import * as logSymbols from 'log-symbols';
 import * as MultiProgress from 'multi-progress';
 import * as ProgressBar from 'progress';
-import { combineLatest, interval, Observable } from 'rxjs';
+import { combineLatest, interval, Observable, Subject } from 'rxjs';
+import { tap } from 'rxjs/internal/operators/tap';
 import { last, map, takeUntil } from 'rxjs/operators';
 import {
   getJobProgressEstimatedRemainingTime,
@@ -17,26 +19,32 @@ import { millisecondsToDisplay } from '../../../utils/milliseconds-to-display';
 import { JobBuildDescriber } from '../jobs-builder';
 
 export class JobRunner {
-  constructor(private jenkins: JenkinsRxJs, private multi: MultiProgress) {}
+  constructor(private jenkins: JenkinsRxJs) {}
 
-  run(build: JobBuildDescriber): Promise<JobDone> {
-    const stream$: Observable<JobResponse> = this.jenkins.job(build.opts);
+  run(build: JobBuildDescriber, multi: MultiProgress): Promise<JobDone> {
+    const stream$: Observable<JobResponse> = this.display(
+      build,
+      this.jenkins.job(build.opts),
+      multi,
+    );
     const end$: Observable<JobDone> = stream$.pipe(last()) as Observable<JobDone>;
-
-    this.display(build, stream$);
 
     return end$.toPromise();
   }
 
-  private display(build: JobBuildDescriber, stream$: Observable<JobResponse>): void {
-    const bar: ProgressBar = this.createBar(build);
+  private display(
+    build: JobBuildDescriber,
+    stream$: Observable<JobResponse>,
+    multi: MultiProgress,
+  ): Observable<JobResponse> {
+    const bar: ProgressBar = this.createBar(build, multi);
+    const end$ = new Subject();
 
-    const subscription = combineLatest(stream$, interval(1000))
-      .pipe(
-        map(([response]) => response),
-        takeUntil(processInterrupt$),
-      )
-      .subscribe((response: JobResponse) => {
+    return combineLatest(stream$, interval(1000)).pipe(
+      map(([response]: [JobResponse, number]) => response),
+      takeUntil(processInterrupt$),
+      takeUntil(end$.pipe(takeUntil(processInterrupt$))),
+      tap((response: JobResponse) => {
         if (isJobProgress(response)) {
           bar.update(getJobProgressPercentage(response), {
             text: response.text,
@@ -45,24 +53,26 @@ export class JobRunner {
         } else if (isJobDone(response)) {
           if (response.status === 'SUCCESS') {
             bar.update(1, {
-              text: chalk.green('Completed'),
+              text: `${logSymbols.success} Completed`,
               remaining: '',
             });
           } else {
             bar.update(1, {
-              text: chalk.red('Failed'),
+              text: `${logSymbols.error} Failed`,
               remaining: '',
             });
           }
 
           bar.terminate();
-          subscription.unsubscribe();
+          end$.next();
+          end$.complete();
         }
-      });
+      }),
+    );
   }
 
-  private createBar(build: JobBuildDescriber): ProgressBar {
-    return this.multi.newBar(`${build.displayName} [:bar] :percent :remaining (:text)`, {
+  private createBar(build: JobBuildDescriber, multi: MultiProgress): ProgressBar {
+    return multi.newBar(`${build.displayName} [:bar] :percent :remaining (:text)`, {
       complete: chalk.green('='),
       incomplete: ' ',
       width: 50 - build.displayName.length,
