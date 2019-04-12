@@ -26,8 +26,8 @@ import { Project, verifyProjects } from './project-questions';
 const multi = new MultiProgress(process.stderr);
 
 export async function run(inputJobs: string[], inputProjects: string[], extended: boolean) {
-  await uiTest();
-  // questionnaire(inputJobs, inputProjects, extended);
+  // await uiTest();
+  questionnaire(inputJobs, inputProjects, extended);
 }
 
 async function questionnaire(inputJobs: string[], inputProjects: string[], extended: boolean) {
