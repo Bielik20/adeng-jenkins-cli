@@ -14,11 +14,9 @@ async function questionnaire(inputJobs: string[], inputProjects: string[], exten
   const jobs: Job[] = await verifyJobs(inputJobs);
   const projects: Project[] = await verifyProjects(inputProjects);
   const params: ParamsResult = await promptParams(jobs, projects, extended);
-  console.log(params);
 
   const builder = new JobsBuilder();
   const builderResult = builder.build(jobs, projects, params);
-  console.log(JSON.stringify(builderResult, null, 2));
 
   const jenkinsRxJs = await Jenkins.getJenkinsRxJs();
   const runner = new JobsRunner(jenkinsRxJs);

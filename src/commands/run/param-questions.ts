@@ -31,6 +31,7 @@ export async function promptParams(
   result.datacenter = result.datacenter || 'sjc';
   result.debug = result.debug || false;
   result.fandomEnvironment = result.fandomEnvironment || 'sandbox-adeng';
+  result.configBranch = result.configBranch || 'dev';
 
   return result;
 }
@@ -91,6 +92,7 @@ const questions: FilterParamQuestion[] = [
   {
     name: 'configBranch',
     message: 'Config branch e.g. release-01, PLAT-345',
+    default: 'dev',
     destined: {
       jobs: ['update'],
       projects: ['app'],
