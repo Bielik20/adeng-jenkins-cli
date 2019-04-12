@@ -18,7 +18,9 @@ import { millisecondsToDisplay } from '../../../utils/milliseconds-to-display';
 import { JobBuildDescriber } from '../jobs-builder';
 
 export class JobRunner {
-  constructor(private jenkins: JenkinsRxJs, private multi: MultiProgress) {}
+  private multi = new MultiProgress(process.stderr);
+
+  constructor(private jenkins: JenkinsRxJs) {}
 
   run(build: JobBuildDescriber): Promise<JobDone> {
     const stream$: Observable<JobResponse> = this.display(build, this.jenkins.job(build.opts));

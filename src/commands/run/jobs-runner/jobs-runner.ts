@@ -1,16 +1,14 @@
 import * as ansiEscapes from 'ansi-escapes';
 import chalk from 'chalk';
-import * as MultiProgress from 'multi-progress';
 import { JenkinsRxJs, JobDone } from '../../../jenkins-rxjs';
 import { JobBuildDescriber, JobBuilderResult } from '../jobs-builder';
 import { JobRunner } from './job-runner';
 
 export class JobsRunner {
   private jobRunner: JobRunner;
-  private multi = new MultiProgress(process.stderr);
 
   constructor(jenkins: JenkinsRxJs) {
-    this.jobRunner = new JobRunner(jenkins, this.multi);
+    this.jobRunner = new JobRunner(jenkins);
   }
 
   async runJobs(inputs: JobBuilderResult[]): Promise<void> {

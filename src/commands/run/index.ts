@@ -58,7 +58,13 @@ async function uiTest() {
   await delay(1000);
   // process.stdout.write(ansiEscapes.cursorHide);
 
-  const streams = [createStream(3000), createStream(4000), createStream(2500), createStream(1000)];
+  const streams = [
+    createStream(3000),
+    createStream(4000),
+    createStream(2500),
+    createStream(1000),
+    createStream(1000),
+  ];
   const promises = streams.map(s =>
     display(build, s, multi)
       .pipe(last())
