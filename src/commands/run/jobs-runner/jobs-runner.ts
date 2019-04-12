@@ -1,5 +1,6 @@
 import * as ansiEscapes from 'ansi-escapes';
 import chalk from 'chalk';
+import * as MultiProgress from 'multi-progress';
 import { JenkinsRxJs, JobDone } from '../../../jenkins-rxjs';
 import { JobBuildDescriber, JobBuilderResult } from '../jobs-builder';
 import { JobRunner } from './job-runner';
@@ -17,7 +18,9 @@ export class JobsRunner {
       process.stdout.write(ansiEscapes.cursorSavePosition);
       process.stdout.write(ansiEscapes.cursorHide);
 
-      const results: JobDone[] = await Promise.all(this.runJobProjects(input));
+      const multi = new MultiProgress(process.stderr);
+      const results: JobDone[] = await Promise.all(this.runJobProjects(input, multi));
+      multi.terminate();
 
       process.stdout.write(ansiEscapes.cursorRestorePosition);
       process.stdout.write(ansiEscapes.cursorDown(results.length + 1) + ansiEscapes.cursorLeft);
@@ -37,7 +40,7 @@ export class JobsRunner {
     }
   }
 
-  private runJobProjects(input: JobBuilderResult): Promise<JobDone>[] {
-    return input.builds.map((build: JobBuildDescriber) => this.jobRunner.run(build));
+  private runJobProjects(input: JobBuilderResult, multi: MultiProgress): Promise<JobDone>[] {
+    return input.builds.map((build: JobBuildDescriber) => this.jobRunner.run(build, multi));
   }
 }

@@ -2,6 +2,7 @@ import * as ansiEscapes from 'ansi-escapes';
 import chalk from 'chalk';
 import * as logSymbols from 'log-symbols';
 import * as MultiProgress from 'multi-progress';
+import * as ProgressBar from 'progress';
 import { combineLatest, interval, Observable, Subject } from 'rxjs';
 import { tap } from 'rxjs/internal/operators/tap';
 import { last, map, shareReplay, takeUntil } from 'rxjs/operators';
@@ -19,16 +20,16 @@ import { Jenkins } from '../../utils/jenkins';
 import { millisecondsToDisplay } from '../../utils/milliseconds-to-display';
 import { Job, verifyJobs } from './job-questions';
 import { JobBuildDescriber, JobsBuilder } from './jobs-builder';
-import * as ProgressBar from './jobs-runner/job-runner';
 import { JobsRunner } from './jobs-runner/jobs-runner';
 import { promptParams } from './param-questions';
 import { ParamsResult } from './param-questions.model';
 import { Project, verifyProjects } from './project-questions';
 
 export async function run(inputJobs: string[], inputProjects: string[], extended: boolean) {
-  await uiTest();
-  await uiTest();
-  // questionnaire(inputJobs, inputProjects, extended);
+  // await uiTest();
+  // await uiTest();
+  // await uiTest();
+  questionnaire(inputJobs, inputProjects, extended);
 }
 
 async function questionnaire(inputJobs: string[], inputProjects: string[], extended: boolean) {
@@ -51,37 +52,42 @@ async function uiTest() {
   const build: any = {
     displayName: 'test',
   };
+  const streams = [
+    createStream(3000),
+    createStream(2000),
+    createStream(2500),
+    createStream(1000),
+    createStream(4000),
+  ];
 
-  console.log('a');
+  console.log(chalk.bgCyan(`======JOB======`));
   process.stdout.write(ansiEscapes.cursorSavePosition);
   process.stdout.write(ansiEscapes.cursorHide);
 
-  const streams = [
-    createStream(3000),
-    createStream(1000),
-    createStream(2500),
-    createStream(4000),
-    createStream(1000),
-  ];
-  const promises = streams.map(s =>
-    display(build, s, multi)
-      .pipe(last())
-      .toPromise(),
-  );
-  const array = await Promise.all(promises);
+  try {
+    const promises = streams.map(s =>
+      display(build, s, multi)
+        .pipe(last())
+        .toPromise(),
+    );
+    await Promise.all(promises);
+  } catch (e) {
+    console.log(e);
+  }
 
   process.stdout.write(ansiEscapes.cursorRestorePosition);
-  process.stdout.write(ansiEscapes.cursorDown(array.length + 1) + ansiEscapes.cursorLeft);
+  process.stdout.write(ansiEscapes.cursorDown(streams.length + 1) + ansiEscapes.cursorLeft);
   process.stdout.write(ansiEscapes.cursorShow);
-
-  console.log('aaa');
+  multi.terminate();
 }
 
 function display(build: JobBuildDescriber, stream$: Observable<JobResponse>, multi) {
   const bar: ProgressBar = createBar(build, multi);
   const end$ = new Subject();
+  const time = Math.floor(Math.random() * 100) + 500;
+  // console.log(time);
 
-  return combineLatest(stream$, interval(1000)).pipe(
+  return combineLatest(stream$, interval(time)).pipe(
     map(([response]) => response),
     takeUntil(processInterrupt$),
     takeUntil(end$.pipe(takeUntil(processInterrupt$))),
@@ -99,7 +105,7 @@ function display(build: JobBuildDescriber, stream$: Observable<JobResponse>, mul
           });
         } else {
           bar.update(1, {
-            text: `${logSymbols.error} Completed`,
+            text: `${logSymbols.error} Failed`,
             remaining: '',
           });
         }
