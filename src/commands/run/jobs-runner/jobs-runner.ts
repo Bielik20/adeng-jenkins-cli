@@ -20,8 +20,7 @@ export class JobsRunner {
       const results: JobDone[] = await Promise.all(this.runJobProjects(input));
 
       process.stdout.write(ansiEscapes.cursorRestorePosition);
-      process.stdout.write(ansiEscapes.cursorDown(results.length + 1));
-      process.stdout.write(ansiEscapes.cursorLeft);
+      process.stdout.write(ansiEscapes.cursorDown(results.length + 1) + ansiEscapes.cursorLeft);
       process.stdout.write(ansiEscapes.cursorShow);
 
       this.ensureSuccess(results);

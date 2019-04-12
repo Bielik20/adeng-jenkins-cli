@@ -27,7 +27,6 @@ import { Project, verifyProjects } from './project-questions';
 
 export async function run(inputJobs: string[], inputProjects: string[], extended: boolean) {
   await uiTest();
-  await delay(5000);
   await uiTest();
   // questionnaire(inputJobs, inputProjects, extended);
 }
@@ -55,14 +54,13 @@ async function uiTest() {
 
   console.log('a');
   process.stdout.write(ansiEscapes.cursorSavePosition);
-  await delay(1000);
-  // process.stdout.write(ansiEscapes.cursorHide);
+  process.stdout.write(ansiEscapes.cursorHide);
 
   const streams = [
     createStream(3000),
-    createStream(4000),
-    createStream(2500),
     createStream(1000),
+    createStream(2500),
+    createStream(4000),
     createStream(1000),
   ];
   const promises = streams.map(s =>
@@ -73,10 +71,8 @@ async function uiTest() {
   const array = await Promise.all(promises);
 
   process.stdout.write(ansiEscapes.cursorRestorePosition);
-  await delay(1000);
   process.stdout.write(ansiEscapes.cursorDown(array.length + 1) + ansiEscapes.cursorLeft);
-  // process.stdout.write(ansiEscapes.cursorShow);
-  // console.log(ansiEscapes.cursorGetPosition);
+  process.stdout.write(ansiEscapes.cursorShow);
 
   console.log('aaa');
 }
