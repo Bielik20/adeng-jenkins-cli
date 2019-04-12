@@ -35,6 +35,9 @@ async function questionnaire(inputJobs: string[], inputProjects: string[], exten
   const projects: Project[] = await verifyProjects(inputProjects);
   const params: ParamsResult = await promptParams(jobs, projects, extended);
 
+  process.stdout.write(ansiEscapes.cursorDown(1));
+  process.stdout.write(ansiEscapes.cursorLeft);
+
   const builder = new JobsBuilder();
   const builderResult = builder.build(jobs, projects, params);
 
@@ -51,6 +54,7 @@ async function uiTest() {
   const streams = [createStream(3000), createStream(4000), createStream(2500), createStream(1000)];
 
   process.stdout.write(ansiEscapes.cursorSavePosition);
+  process.stdout.write(ansiEscapes.cursorHide);
 
   streams.forEach(s => display(build, s));
 
@@ -59,6 +63,7 @@ async function uiTest() {
   process.stdout.write(ansiEscapes.cursorRestorePosition);
   process.stdout.write(ansiEscapes.cursorDown(array.length + 1));
   process.stdout.write(ansiEscapes.cursorLeft);
+  // process.stdout.write(ansiEscapes.cursorShow);
 
   console.log('aaa');
 }

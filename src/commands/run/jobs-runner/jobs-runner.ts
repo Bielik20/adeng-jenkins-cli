@@ -15,14 +15,16 @@ export class JobsRunner {
 
   async runJobs(inputs: JobBuilderResult[]): Promise<void> {
     for (const input of inputs) {
-      console.log('\n', chalk.bgCyan(`======${input.displayName}======`));
+      console.log(chalk.bgCyan(`======${input.displayName}======`));
       process.stdout.write(ansiEscapes.cursorSavePosition);
+      process.stdout.write(ansiEscapes.cursorHide);
 
       const results: JobDone[] = await Promise.all(this.runJobProjects(input));
 
       process.stdout.write(ansiEscapes.cursorRestorePosition);
       process.stdout.write(ansiEscapes.cursorDown(results.length + 1));
       process.stdout.write(ansiEscapes.cursorLeft);
+      process.stdout.write(ansiEscapes.cursorShow);
 
       this.ensureSuccess(results);
     }
