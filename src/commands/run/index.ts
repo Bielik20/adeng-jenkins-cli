@@ -2,7 +2,8 @@ import { Jenkins } from '../../utils/jenkins';
 import { Job, verifyJobs } from './job-questions';
 import { JobsBuilder } from './jobs-builder';
 import { JobsRunner } from './jobs-runner/jobs-runner';
-import { ParamsResult, promptParams } from './param-questions';
+import { promptParams } from './param-questions';
+import { ParamsResult } from './param-questions.model';
 import { Project, verifyProjects } from './project-questions';
 
 export async function run(inputJobs: string[], inputProjects: string[], extended: boolean) {

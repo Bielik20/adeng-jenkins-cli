@@ -2,6 +2,7 @@ import * as inquirer from 'inquirer';
 import { sandboxes } from '../../utils/sandbox';
 import { store } from '../../utils/store';
 import { Job } from './job-questions';
+import { ParamsResult } from './param-questions.model';
 import { availableProjects, Project } from './project-questions';
 import {
   adenToUpper,
@@ -19,21 +20,6 @@ interface FilterParamQuestion extends inquirer.Question {
   };
 }
 
-export interface ParamsResult {
-  branch?: string;
-  adEngineVersion?: string;
-  sandbox?: string;
-  configBranch?: string;
-  datacenter?: string;
-  crowdinBranch?: string;
-  debug?: boolean;
-  testBranch?: string;
-  query?: string;
-  fandomEnvironment?: string;
-  extension?: string;
-  name?: string;
-}
-
 export async function promptParams(
   jobs: Job[],
   projects: Project[],
@@ -42,7 +28,10 @@ export async function promptParams(
   const paramQuestions: inquirer.Questions = getParamQuestions(jobs, projects, extended);
   const result: ParamsResult = await inquirer.prompt<ParamsResult>(paramQuestions);
 
-  // TODO: fill default
+  result.datacenter = result.datacenter || 'sjc';
+  result.debug = result.debug || false;
+  result.fandomEnvironment = result.fandomEnvironment || 'sandbox-adeng';
+
   return result;
 }
 
