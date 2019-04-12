@@ -84,7 +84,7 @@ export function jobResponseFromQueue(
 
 export function jobResponseFromBuild(build: BuildResponse): JobResponse {
   const response = {
-    name: build.displayName,
+    name: build.fullDisplayName,
     url: build.url,
   };
 

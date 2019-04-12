@@ -16,7 +16,7 @@ import { millisecondsToDisplay } from '../../../utils/milliseconds-to-display';
 import { JobBuildDescriber } from '../jobs-builder';
 
 export class JobRunner {
-  constructor(private jenkins: JenkinsRxJs) {}
+  constructor(private jenkins: JenkinsRxJs, private multi: MultiProgress) {}
 
   run(build: JobBuildDescriber): Promise<JobDone> {
     const stream$: Observable<JobResponse> = this.jenkins
@@ -27,8 +27,7 @@ export class JobRunner {
   }
 
   private display(response: JobResponse, build: JobBuildDescriber) {
-    const multi = new MultiProgress(process.stderr);
-    const bar = multi.newBar(`${build.displayName} [:bar] :percent :remaining (:text)`, {
+    const bar = this.multi.newBar(`${build.displayName} [:bar] :percent :remaining (:text)`, {
       complete: chalk.green('='),
       incomplete: ' ',
       width: 30,

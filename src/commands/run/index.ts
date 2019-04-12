@@ -48,7 +48,7 @@ async function questionnaire(inputJobs: string[], inputProjects: string[], exten
   const jenkinsRxJs = new JenkinsRxJs(jenkins);
   const runner = new JobsRunner(jenkinsRxJs);
 
-  const runnerResult = await runner.run(builderResult[0]);
+  const runnerResult = await Promise.all(runner.run(builderResult[0]));
   console.log(runnerResult);
 }
 
