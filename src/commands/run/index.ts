@@ -16,6 +16,7 @@ import { store } from '../../utils/store';
 import { ensureAuthenticated } from '../login';
 import { Job, verifyJobs } from './job-questions';
 import { JobsBuilder } from './jobs-builder';
+import { JobsRunner } from './jobs-runner/jobs-runner';
 import { getParamQuestions, ParamsResult } from './param-questions';
 import { Project, verifyProjects } from './project-questions';
 
@@ -37,7 +38,18 @@ async function questionnaire(inputJobs: string[], inputProjects: string[], exten
   console.log(result);
 
   const builder = new JobsBuilder();
-  console.log(JSON.stringify(builder.build(jobs, projects, result), null, 2));
+  const builderResult = builder.build(jobs, projects, result);
+  console.log(JSON.stringify(builderResult, null, 2));
+
+  const jenkins = createJenkins({
+    baseUrl: `http://${store.username}:${store.token}@jenkins.wikia-prod:8080`,
+    promisify: true,
+  });
+  const jenkinsRxJs = new JenkinsRxJs(jenkins);
+  const runner = new JobsRunner(jenkinsRxJs);
+
+  const runnerResult = await runner.run(builderResult[0]);
+  console.log(runnerResult);
 }
 
 function runJenkins() {

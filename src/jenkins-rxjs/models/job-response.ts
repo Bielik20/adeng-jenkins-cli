@@ -12,14 +12,16 @@ import {
 
 export type JobStatus = 'FAILURE' | 'SUCCESS' | 'PROGRESS';
 
-export interface JobResponse {
+export type JobResponse = JobProgress | JobDone;
+
+interface JobResponseBase {
   name: string;
   url: string;
   text: string;
   status: JobStatus;
 }
 
-export interface JobProgress extends JobResponse {
+export interface JobProgress extends JobResponseBase {
   status: 'PROGRESS';
   started: number;
   estimatedEnd: number;
@@ -29,7 +31,7 @@ export function isJobProgress(input: JobResponse): input is JobProgress {
   return input.status === 'PROGRESS';
 }
 
-export interface JobDone extends JobResponse {
+export interface JobDone extends JobResponseBase {
   id: number;
   status: 'FAILURE' | 'SUCCESS';
 }
