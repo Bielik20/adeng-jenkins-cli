@@ -26,26 +26,7 @@ import { Project, verifyProjects } from './project-questions';
 const multi = new MultiProgress(process.stderr);
 
 export async function run(inputJobs: string[], inputProjects: string[], extended: boolean) {
-  const build: any = {
-    displayName: 'test',
-  };
-  const s1 = createStream(3000);
-  const s2 = createStream(2000);
-
-  process.stdout.write(ansiEscapes.cursorSavePosition);
-
-  display(build, s1);
-  display(build, s2);
-
-  await Promise.all([s1.pipe(last()).toPromise(), s2.pipe(last()).toPromise()]);
-
-  process.stdout.write(ansiEscapes.cursorRestorePosition);
-  process.stdout.write(ansiEscapes.cursorDown(3));
-  process.stdout.write(ansiEscapes.cursorLeft);
-
-  console.log('aaa');
-  console.log('aaa');
-
+  await uiTest();
   // questionnaire(inputJobs, inputProjects, extended);
 }
 
@@ -60,6 +41,27 @@ async function questionnaire(inputJobs: string[], inputProjects: string[], exten
   const jenkinsRxJs = await Jenkins.getJenkinsRxJs();
   const runner = new JobsRunner(jenkinsRxJs);
   await runner.runJobs(builderResult);
+}
+
+async function uiTest() {
+  const build: any = {
+    displayName: 'test',
+  };
+
+  const streams = [createStream(3000), createStream(4000), createStream(2500), createStream(1000)];
+
+  process.stdout.write(ansiEscapes.cursorSavePosition);
+
+  streams.forEach(s => display(build, s));
+
+  const array = await Promise.all(streams.map(s => s.pipe(last()).toPromise()));
+
+  process.stdout.write(ansiEscapes.cursorRestorePosition);
+  process.stdout.write(ansiEscapes.cursorDown(array.length + 1));
+  process.stdout.write(ansiEscapes.cursorLeft);
+
+  console.log('aaa');
+  console.log('aaa');
 }
 
 function display(build: JobBuildDescriber, stream$: Observable<JobResponse>): void {

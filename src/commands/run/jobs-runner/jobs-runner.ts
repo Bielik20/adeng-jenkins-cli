@@ -15,6 +15,7 @@ export class JobsRunner {
 
   async runJobs(inputs: JobBuilderResult[]): Promise<void> {
     for (const input of inputs) {
+      console.log('\n', chalk.bgCyan(`======${input.displayName}======`));
       process.stdout.write(ansiEscapes.cursorSavePosition);
 
       const results: JobDone[] = await Promise.all(this.runJobProjects(input));
@@ -38,8 +39,6 @@ export class JobsRunner {
   }
 
   private runJobProjects(input: JobBuilderResult): Promise<JobDone>[] {
-    console.log('\n', chalk.bgCyan(`======${input.displayName}======`));
-
     return input.builds.map((build: JobBuildDescriber) => this.jobRunner.run(build));
   }
 }
