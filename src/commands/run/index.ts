@@ -1,5 +1,6 @@
 import * as ansiEscapes from 'ansi-escapes';
 import chalk from 'chalk';
+import * as logSymbols from 'log-symbols';
 import * as MultiProgress from 'multi-progress';
 import { combineLatest, interval, Observable } from 'rxjs';
 import { last, map, shareReplay, takeUntil } from 'rxjs/operators';
@@ -26,8 +27,8 @@ import { Project, verifyProjects } from './project-questions';
 const multi = new MultiProgress(process.stderr);
 
 export async function run(inputJobs: string[], inputProjects: string[], extended: boolean) {
-  await uiTest();
-  // questionnaire(inputJobs, inputProjects, extended);
+  // await uiTest();
+  questionnaire(inputJobs, inputProjects, extended);
 }
 
 async function questionnaire(inputJobs: string[], inputProjects: string[], extended: boolean) {
@@ -85,12 +86,12 @@ function display(build: JobBuildDescriber, stream$: Observable<JobResponse>): vo
       } else if (isJobDone(response)) {
         if (response.status === 'SUCCESS') {
           bar.update(1, {
-            text: chalk.green('Completed'),
+            text: `${logSymbols.success} Completed`,
             remaining: '',
           });
         } else {
           bar.update(1, {
-            text: chalk.red('Failed'),
+            text: `${logSymbols.error} Completed`,
             remaining: '',
           });
         }

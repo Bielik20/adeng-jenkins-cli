@@ -37,7 +37,7 @@ export class JobRunner {
     return combineLatest(stream$, interval(1000)).pipe(
       map(([response]: [JobResponse, number]) => response),
       takeUntil(processInterrupt$),
-      takeUntil(end$),
+      takeUntil(end$.pipe(takeUntil(processInterrupt$))),
       tap((response: JobResponse) => {
         if (isJobProgress(response)) {
           bar.update(getJobProgressPercentage(response), {

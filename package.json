@@ -33,6 +33,7 @@
     "git-branch": "^2.0.1",
     "inquirer": "^6.2.2",
     "jenkins": "^0.25.0",
+    "log-symbols": "^2.2.0",
     "minimist": "^1.2.0",
     "multi-progress": "^2.0.0",
     "rxjs": "^6.4.0"
