@@ -14,23 +14,27 @@ import {
 import { millisecondsToDisplay } from '../../utils/milliseconds-to-display';
 import { store } from '../../utils/store';
 import { ensureAuthenticated } from '../login';
-import { Job, verifyJobs } from './jobs';
-import { Project, verifyProjects } from './projects';
-import { getQuestions, QuestionsResult } from './questions';
+import { Job, verifyJobs } from './job-questions';
+import { JobsBuilder } from './jobs/jobs-builder';
+import { getParamQuestions, ParamsResult } from './param-questions';
+import { Project, verifyProjects } from './project-questions';
 
 export async function run(inputJobs: string[], inputProjects: string[], extended: boolean) {
   await ensureAuthenticated();
-  // questionnaire(inputJobs, inputProjects, extended);
-  runJenkins();
+  questionnaire(inputJobs, inputProjects, extended);
+  // runJenkins();
 }
 
 async function questionnaire(inputJobs: string[], inputProjects: string[], extended: boolean) {
   const jobs: Job[] = await verifyJobs(inputJobs);
   const projects: Project[] = await verifyProjects(inputProjects);
-  const questions = getQuestions(jobs, projects, extended);
+  const paramQuestions = getParamQuestions(jobs, projects, extended);
 
-  const result: QuestionsResult = await inquirer.prompt<QuestionsResult>(questions);
+  const result: ParamsResult = await inquirer.prompt<ParamsResult>(paramQuestions);
   console.log(result);
+
+  const builder = new JobsBuilder();
+  console.log(JSON.stringify(builder.build(jobs, projects, result), null, 2));
 }
 
 function runJenkins() {

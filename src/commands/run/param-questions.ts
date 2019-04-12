@@ -7,11 +7,11 @@ import {
 } from '../../utils/question-helpers';
 import { sandboxes } from '../../utils/sandbox';
 import { store } from '../../utils/store';
-import { Job } from './jobs';
-import { availableProjects, Project } from './projects';
+import { Job } from './job-questions';
+import { availableProjects, Project } from './project-questions';
 
-interface FilterQuestion extends inquirer.Question {
-  name: keyof QuestionsResult;
+interface FilterParamQuestion extends inquirer.Question {
+  name: keyof ParamsResult;
   destined: {
     jobs: Job[];
     projects: Project[];
@@ -19,7 +19,7 @@ interface FilterQuestion extends inquirer.Question {
   };
 }
 
-export interface QuestionsResult {
+export interface ParamsResult {
   branch?: string;
   adEngineVersion?: string;
   sandbox?: string;
@@ -34,7 +34,7 @@ export interface QuestionsResult {
   name?: string;
 }
 
-export function getQuestions(
+export function getParamQuestions(
   jobs: Job[],
   projects: Project[],
   extended: boolean,
@@ -48,7 +48,7 @@ export function getQuestions(
   });
 }
 
-const questions: FilterQuestion[] = [
+const questions: FilterParamQuestion[] = [
   {
     name: 'branch',
     message: 'Project branch',
@@ -67,7 +67,7 @@ const questions: FilterQuestion[] = [
     message: 'Version of @wikia/ad-engine (can be "latest")',
     validate: requiredInput,
     filter: replaceLatestWithAdEngineVersion,
-    default: (answers: QuestionsResult) => answers.branch,
+    default: (answers: ParamsResult) => answers.branch,
     destined: {
       jobs: ['update'],
       projects: availableProjects,
@@ -169,7 +169,7 @@ const questions: FilterQuestion[] = [
     name: 'name',
     message: 'Custom name which will be added to tab name',
     validate: requiredInput,
-    default: (answers: QuestionsResult) => answers.branch || answers.sandbox,
+    default: (answers: ParamsResult) => answers.branch || answers.sandbox,
     destined: {
       jobs: ['test'],
       projects: availableProjects,
