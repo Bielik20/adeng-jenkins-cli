@@ -34,7 +34,19 @@ export interface ParamsResult {
   name?: string;
 }
 
-export function getParamQuestions(
+export async function promptParams(
+  jobs: Job[],
+  projects: Project[],
+  extended: boolean,
+): Promise<ParamsResult> {
+  const paramQuestions: inquirer.Questions = getParamQuestions(jobs, projects, extended);
+  const result: ParamsResult = await inquirer.prompt<ParamsResult>(paramQuestions);
+
+  // TODO: fill default
+  return result;
+}
+
+function getParamQuestions(
   jobs: Job[],
   projects: Project[],
   extended: boolean,
