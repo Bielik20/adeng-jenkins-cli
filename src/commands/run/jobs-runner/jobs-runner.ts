@@ -33,7 +33,7 @@ export class JobsRunner {
   }
 
   private runJobProjects(input: JobBuilderResult): Promise<JobDone>[] {
-    console.log('\n', input.displayName);
+    console.log('\n', chalk.bgCyan(`======${input.displayName}======`));
 
     return input.builds.map((build: JobBuildDescriber) => this.jobRunner.run(build));
   }
