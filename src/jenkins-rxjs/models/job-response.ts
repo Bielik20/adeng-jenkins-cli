@@ -1,4 +1,4 @@
-import { pessimisticThreshold } from '../utils';
+import { overestimeThreshold, pessimisticThreshold } from '../utils';
 import { BuildResponse } from './build-response';
 import {
   getQueueItemRemainingDuration,
@@ -89,13 +89,17 @@ export function jobResponseFromBuild(build: BuildResponse): JobResponse {
   };
 
   if (!build.duration) {
+    const estimatedEnd = build.estimatedDuration + build.timestamp;
+
     return {
       ...response,
       text: 'Build in progress',
       status: 'PROGRESS',
       started: build.timestamp,
-      // TODO: If estimated end is past now create new estimated end
-      estimatedEnd: build.estimatedDuration + build.timestamp + pessimisticThreshold,
+      estimatedEnd:
+        estimatedEnd > +new Date()
+          ? estimatedEnd + pessimisticThreshold
+          : +new Date() + overestimeThreshold,
     } as JobProgress;
   }
 
