@@ -30,7 +30,7 @@ export class JobsRunner {
       multi.terminate();
 
       process.stdout.write(ansiEscapes.cursorRestorePosition);
-      process.stdout.write(ansiEscapes.cursorDown(results.length + 1) + ansiEscapes.cursorLeft);
+      process.stdout.write(ansiEscapes.cursorDown(results.length) + ansiEscapes.cursorLeft);
       process.stdout.write(ansiEscapes.cursorShow);
 
       this.ensureSuccess(results);
