@@ -1,3 +1,4 @@
+import * as ansiEscapes from 'ansi-escapes';
 import * as inquirer from 'inquirer';
 import { store } from '../../utils/store';
 import { requiredInput } from '../run/question-helpers';
@@ -31,8 +32,10 @@ const questions: inquirer.Questions = [
   },
   {
     name: 'token',
-    message:
-      'Your Jenkins API token (https://stackoverflow.com/questions/45466090/how-to-get-the-api-token-for-jenkins)',
+    message: `Your Jenkins API token (${ansiEscapes.link(
+      'help',
+      'https://stackoverflow.com/questions/45466090/how-to-get-the-api-token-for-jenkins',
+    )})`,
     validate: requiredInput,
     default: store.token,
   },
