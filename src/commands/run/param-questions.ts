@@ -1,14 +1,14 @@
 import * as inquirer from 'inquirer';
+import { sandboxes } from '../../utils/sandbox';
+import { store } from '../../utils/store';
+import { Job } from './job-questions';
+import { availableProjects, Project } from './project-questions';
 import {
   adenToUpper,
   currentBranch,
   replaceLatestWithAdEngineVersion,
   requiredInput,
-} from '../../utils/question-helpers';
-import { sandboxes } from '../../utils/sandbox';
-import { store } from '../../utils/store';
-import { Job } from './job-questions';
-import { availableProjects, Project } from './project-questions';
+} from './question-helpers';
 
 interface FilterParamQuestion extends inquirer.Question {
   name: keyof ParamsResult;

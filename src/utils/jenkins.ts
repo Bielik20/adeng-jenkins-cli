@@ -4,29 +4,29 @@ import { ensureAuthenticated } from '../commands/login';
 import { JenkinsRxJs } from '../jenkins-rxjs';
 import { store } from './store';
 
-export class Jenkins {
+export abstract class Jenkins {
   private static promisified: JenkinsPromisifiedAPI;
   private static rxjs: JenkinsRxJs;
 
   static async getJenkinsPromisified(): Promise<JenkinsPromisifiedAPI> {
-    if (!this.promisified) {
+    if (!Jenkins.promisified) {
       await ensureAuthenticated();
-      this.promisified = createJenkins({
+      Jenkins.promisified = createJenkins({
         baseUrl: `http://${store.username}:${store.token}@jenkins.wikia-prod:8080`,
         promisify: true,
       });
     }
 
-    return this.promisified;
+    return Jenkins.promisified;
   }
 
   static async getJenkinsRxJs() {
-    if (!this.rxjs) {
+    if (!Jenkins.rxjs) {
       const jenkinsPromise = await Jenkins.getJenkinsPromisified();
 
-      this.rxjs = new JenkinsRxJs(jenkinsPromise);
+      Jenkins.rxjs = new JenkinsRxJs(jenkinsPromise);
     }
 
-    return this.rxjs;
+    return Jenkins.rxjs;
   }
 }

@@ -1,7 +1,7 @@
 import * as inquirer from 'inquirer';
-import { requiredInput } from '../../utils/question-helpers';
 import { isSandbox, Sandbox, sandboxes } from '../../utils/sandbox';
 import { store } from '../../utils/store';
+import { requiredInput } from '../run/question-helpers';
 
 export async function sandbox(input: string) {
   if (isSandbox(input)) {
