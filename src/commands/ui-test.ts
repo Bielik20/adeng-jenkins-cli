@@ -18,7 +18,6 @@ import {
 } from '../jenkins-rxjs/models';
 import { delay, processInterrupt$ } from '../jenkins-rxjs/utils';
 import { JobDescriber } from '../jobs-runner';
-import { millisecondsToDisplay } from '../utils/milliseconds-to-display';
 
 export async function uiTest() {
   const multi = new MultiProgress(process.stderr);
@@ -123,4 +122,10 @@ function createStream(timeout) {
     observer.next(jobDone);
     observer.complete();
   }).pipe(shareReplay(1));
+}
+
+function millisecondsToDisplay(milliseconds: number): string {
+  const minutes: number = Math.floor(milliseconds / 60000);
+  const seconds: number = +((milliseconds % 60000) / 1000).toFixed(0);
+  return minutes + ' min' + (seconds < 1 ? '' : ` ${seconds} sec`);
 }

@@ -10,13 +10,13 @@ export class JobBatchRunner {
     this.jobRunner = new JobRunner(jenkins);
   }
 
-  async runJobs(inputs: JobBatchDescriber[]): Promise<void> {
-    const uiManager = new UiManager(inputs);
+  async runJobs(batchDescribers: JobBatchDescriber[]): Promise<void> {
+    const uiManager = new UiManager(batchDescribers);
 
-    for (const input of inputs) {
-      uiManager.printBatchHeader(input);
+    for (const batchDescriber of batchDescribers) {
+      uiManager.printBatchHeader(batchDescriber);
 
-      const results: JobDone[] = await Promise.all(this.runJobProjects(input, uiManager));
+      const results: JobDone[] = await Promise.all(this.runJobProjects(batchDescriber, uiManager));
 
       uiManager.printBatchFooter(results);
       this.ensureSuccess(results, uiManager);
@@ -32,7 +32,10 @@ export class JobBatchRunner {
     }
   }
 
-  private runJobProjects(input: JobBatchDescriber, uiManager: UiManager): Promise<JobDone>[] {
-    return input.builds.map((build: JobDescriber) => this.jobRunner.run(build, uiManager));
+  private runJobProjects(
+    batchDescriber: JobBatchDescriber,
+    uiManager: UiManager,
+  ): Promise<JobDone>[] {
+    return batchDescriber.builds.map((build: JobDescriber) => this.jobRunner.run(build, uiManager));
   }
 }

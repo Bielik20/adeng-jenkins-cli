@@ -1,9 +1,19 @@
 import * as ansiEscapes from 'ansi-escapes';
 import * as boxen from 'boxen';
 import { BorderStyle } from 'boxen';
+import chalk from 'chalk';
 import * as logSymbols from 'log-symbols';
 import * as MultiProgress from 'multi-progress';
-import { JobDone } from '../jenkins-rxjs/models';
+import * as ProgressBar from 'progress';
+import {
+  getJobProgressEstimatedRemainingTime,
+  getJobProgressPercentage,
+  isJobDone,
+  isJobProgress,
+  JobDone,
+  JobProgress,
+  JobResponse,
+} from '../jenkins-rxjs/models';
 import { JobBatchDescriber, JobDescriber } from './models';
 
 export class UiManager {
@@ -23,9 +33,9 @@ export class UiManager {
       .reduce((prev, curr) => (prev > curr ? prev : curr), 0);
   }
 
-  printBatchHeader(describer: JobBatchDescriber): void {
-    const fillLength = (this.batchNameWidth = describer.displayName.length);
-    const title = describer.displayName + ' '.repeat(fillLength);
+  printBatchHeader(batchDescriber: JobBatchDescriber): void {
+    const fillLength = this.batchNameWidth - batchDescriber.displayName.length;
+    const title = batchDescriber.displayName + ' '.repeat(fillLength);
 
     process.stdout.write(ansiEscapes.cursorHide);
     console.log(
@@ -50,5 +60,52 @@ export class UiManager {
   printBatchError(failures: JobDone[]): void {
     console.log(`${logSymbols.error} Error: One or more jobs has failed with message:`);
     failures.forEach((failure: JobDone) => console.log(`- ${failure.text}`));
+  }
+
+  createBar(jobDescriber: JobDescriber): ProgressBar {
+    const fillLength = this.jobNameWidth - jobDescriber.displayName.length;
+    const title = jobDescriber.displayName + ' '.repeat(fillLength);
+
+    return this.batchMulti.newBar(`${title} [:bar] :percent (:message)`, {
+      complete: chalk.green('='),
+      incomplete: ' ',
+      width: 40,
+      total: 100,
+    });
+  }
+
+  updateBar(bar: ProgressBar, response: JobResponse): void {
+    if (isJobProgress(response)) {
+      const symbol = logSymbols.info;
+      const link = response.url;
+      const text = ansiEscapes.link(response.text, link);
+      const eta = this.createETA(response);
+      const message = `${symbol} ${text} ${eta}`;
+
+      return bar.update(getJobProgressPercentage(response), { message });
+    }
+
+    if (isJobDone(response)) {
+      const symbol = response.status === 'SUCCESS' ? logSymbols.success : logSymbols.error;
+      const link = response.url;
+      const text = ansiEscapes.link(response.status, link);
+      const message = `${symbol} ${text}`;
+
+      bar.update(1, { message });
+      bar.terminate();
+    }
+  }
+
+  private createETA(response: JobProgress): string {
+    const remaining: number = getJobProgressEstimatedRemainingTime(response);
+    const eta: string = this.millisecondsToDisplay(remaining);
+
+    return `ETA: ${eta}`;
+  }
+
+  private millisecondsToDisplay(milliseconds: number): string {
+    const minutes: number = Math.floor(milliseconds / 60000);
+    const seconds: number = +((milliseconds % 60000) / 1000).toFixed(0);
+    return minutes + ' min' + (seconds < 1 ? '' : ` ${seconds} sec`);
   }
 }
