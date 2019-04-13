@@ -2,7 +2,7 @@ import { Job } from '../job-questions';
 import { ParamsResult } from '../param-questions.model';
 import { Project } from '../project-questions';
 import { DeployJobBuilder } from './deploy-job-builder';
-import { BuilderBatchDescriber } from './models';
+import { JobBatchDescriber } from './models';
 import { TestJobBuilder } from './test-job-builder';
 import { UpdateJobBuilder } from './update-job-builder';
 
@@ -11,8 +11,8 @@ export class JobsBuilder {
   private deployJobBuilder = new DeployJobBuilder();
   private testJobBuilder = new TestJobBuilder();
 
-  build(jobs: Job[], projects: Project[], params: ParamsResult): BuilderBatchDescriber[] {
-    const result: BuilderBatchDescriber[] = [];
+  build(jobs: Job[], projects: Project[], params: ParamsResult): JobBatchDescriber[] {
+    const result: JobBatchDescriber[] = [];
 
     if (jobs.includes('update')) {
       const builds = this.updateJobBuilder.build(projects, params);

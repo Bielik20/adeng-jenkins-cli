@@ -1,6 +1,6 @@
 import { ParamsResult } from '../param-questions.model';
 import { Project } from '../project-questions';
-import { BuilderDescriber } from './models';
+import { JobDescriber } from './models';
 
 interface UpdateJobParams {
   branch: string;
@@ -14,7 +14,7 @@ export class UpdateJobBuilder {
     ['f2', 'update_dependencies_f2'],
   ]);
 
-  build(projects: Project[], params: ParamsResult): BuilderDescriber[] {
+  build(projects: Project[], params: ParamsResult): JobDescriber[] {
     const parameters: UpdateJobParams = this.mapProjectParams(params);
 
     return projects

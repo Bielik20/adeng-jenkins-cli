@@ -1,6 +1,6 @@
 import { ParamsResult } from '../param-questions.model';
 import { Project } from '../project-questions';
-import { BuilderDescriber } from './models';
+import { JobDescriber } from './models';
 
 interface DeployJobAppParams {
   sandbox: string;
@@ -24,7 +24,7 @@ export class DeployJobBuilder {
     ['mobile-wiki', 'mobile-wiki-deploy-sandbox'],
   ]);
 
-  build(projects: Project[], params: ParamsResult): BuilderDescriber[] {
+  build(projects: Project[], params: ParamsResult): JobDescriber[] {
     return projects
       .filter(project => this.projectNameMap.has(project))
       .map((project: Project) => ({

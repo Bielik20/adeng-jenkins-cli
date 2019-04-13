@@ -1,6 +1,6 @@
 import { ParamsResult } from '../param-questions.model';
 import { Project } from '../project-questions';
-import { BuilderDescriber } from './models';
+import { JobDescriber } from './models';
 
 interface TestJobParams {
   env: string;
@@ -19,8 +19,8 @@ export class TestJobBuilder {
     ['f2', 'ads-news-and-stories-prod'],
   ]);
 
-  build(projects: Project[], params: ParamsResult): BuilderDescriber[] {
-    const result: BuilderDescriber = {
+  build(projects: Project[], params: ParamsResult): JobDescriber[] {
+    const result: JobDescriber = {
       displayName: projects.join(', ') as any,
       opts: {
         name: 'ads-synthetic-run',

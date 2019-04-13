@@ -17,8 +17,8 @@ import {
   JobResponse,
 } from '../jenkins-rxjs/models';
 import { delay, processInterrupt$ } from '../jenkins-rxjs/utils';
+import { JobDescriber } from '../jobs-runner';
 import { millisecondsToDisplay } from '../utils/milliseconds-to-display';
-import { JobDescriber } from './run/jobs-builder';
 
 export async function uiTest() {
   const multi = new MultiProgress(process.stderr);
