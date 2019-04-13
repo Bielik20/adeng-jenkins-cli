@@ -1,3 +1,5 @@
+import { combineLatest, Observable } from 'rxjs';
+import { last } from 'rxjs/operators';
 import { JenkinsRxJs, JobDone } from '../jenkins-rxjs';
 import { JobRunner } from './job-runner';
 import { JobBatchDescriber, JobDescriber } from './models';
@@ -16,7 +18,7 @@ export class JobBatchRunner {
     for (const batchDescriber of batchDescribers) {
       uiManager.printBatchHeader(batchDescriber);
 
-      const results: JobDone[] = await Promise.all(this.runJobProjects(batchDescriber, uiManager));
+      const results: JobDone[] = await this.runJobProjects(batchDescriber, uiManager);
 
       uiManager.printBatchFooter(results);
       this.ensureSuccess(results, uiManager);
@@ -35,7 +37,13 @@ export class JobBatchRunner {
   private runJobProjects(
     batchDescriber: JobBatchDescriber,
     uiManager: UiManager,
-  ): Promise<JobDone>[] {
-    return batchDescriber.builds.map((build: JobDescriber) => this.jobRunner.run(build, uiManager));
+  ): Promise<JobDone[]> {
+    const streams: Observable<JobDone>[] = batchDescriber.jobDescribers.map(
+      (jobDescriber: JobDescriber) => this.jobRunner.run(jobDescriber, uiManager),
+    );
+
+    return combineLatest(...streams)
+      .pipe(last())
+      .toPromise();
   }
 }

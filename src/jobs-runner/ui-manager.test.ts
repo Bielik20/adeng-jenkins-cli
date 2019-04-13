@@ -25,7 +25,7 @@ function createBatchDescribers(): JobBatchDescriber[] {
   return [
     {
       displayName: 'odd',
-      builds: [
+      jobDescribers: [
         {
           displayName: 'app',
           opts: {} as any,
@@ -42,7 +42,7 @@ function createBatchDescribers(): JobBatchDescriber[] {
     },
     {
       displayName: 'even',
-      builds: [
+      jobDescribers: [
         {
           displayName: 'app',
           opts: {} as any,
@@ -55,7 +55,7 @@ function createBatchDescribers(): JobBatchDescriber[] {
     },
     {
       displayName: 'loooong-even',
-      builds: [
+      jobDescribers: [
         {
           displayName: 'loooong display name',
           opts: {} as any,
@@ -66,7 +66,7 @@ function createBatchDescribers(): JobBatchDescriber[] {
 }
 
 function createStreamsForBatchDescriber(batchDescriber: JobBatchDescriber, uiManager: UiManager) {
-  return batchDescriber.builds.map(jobDescriber => {
+  return batchDescriber.jobDescribers.map(jobDescriber => {
     const timeout = 2000 + Math.floor(Math.random() * 5000);
     const stream = createStream(timeout);
 

@@ -2,7 +2,7 @@ import { JobBuildOptions } from 'jenkins';
 
 export interface JobBatchDescriber<T = string, P = string> {
   displayName: T;
-  builds: JobDescriber<P>[];
+  jobDescribers: JobDescriber<P>[];
 }
 
 export interface JobDescriber<T = string> {

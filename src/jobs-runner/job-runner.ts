@@ -7,13 +7,12 @@ import { UiManager } from './ui-manager';
 export class JobRunner {
   constructor(private jenkins: JenkinsRxJs) {}
 
-  run(jobDescriber: JobDescriber, uiManager: UiManager): Promise<JobDone> {
+  run(jobDescriber: JobDescriber, uiManager: UiManager): Observable<JobDone> {
     const stream$: Observable<JobResponse> = uiManager.createDisplayStream(
       jobDescriber,
       this.jenkins.job(jobDescriber.opts),
     );
-    const end$: Observable<JobDone> = stream$.pipe(last()) as Observable<JobDone>;
 
-    return end$.toPromise();
+    return stream$.pipe(last()) as Observable<JobDone>;
   }
 }

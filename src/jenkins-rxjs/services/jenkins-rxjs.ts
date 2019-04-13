@@ -21,7 +21,7 @@ export class JenkinsRxJs {
       switchMap((queueNumber: number) =>
         this.queue(queueNumber).pipe(
           switchMap((response: JobResponse) => {
-            if (isJobDone(response)) {
+            if (isJobDone(response) && response.status === 'SUCCESS') {
               return this.build(response.name, response.id);
             }
 
@@ -80,7 +80,6 @@ export class JenkinsRxJs {
   }
 
   private getErrorJobResponse(parserResult: JobResponse, e: Error): JobDone {
-    // TODO: declare parserResult outside try so that you have access to it here
     return {
       ...parserResult,
       text: `Unexpected error occurred:\n- name: ${e.name}\n- message: ${e.message}`,

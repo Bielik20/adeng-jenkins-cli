@@ -30,7 +30,7 @@ export class UiManager {
       .reduce((prev, curr) => (prev > curr ? prev : curr), 0);
 
     this.jobNameWidth = batchDescribers
-      .map((batchDescriber: JobBatchDescriber) => batchDescriber.builds)
+      .map((batchDescriber: JobBatchDescriber) => batchDescriber.jobDescribers)
       .reduce((prev, curr) => [...prev, ...curr], [])
       .map((jobDescriber: JobDescriber) => jobDescriber.displayName.length)
       .reduce((prev, curr) => (prev > curr ? prev : curr), 0);

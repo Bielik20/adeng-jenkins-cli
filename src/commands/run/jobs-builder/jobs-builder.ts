@@ -15,34 +15,34 @@ export class JobsBuilder {
     const result: JobBatchDescriber[] = [];
 
     if (jobs.includes('update')) {
-      const builds = this.updateJobBuilder.build(projects, params);
+      const jobDescribers = this.updateJobBuilder.build(projects, params);
 
-      if (builds.length) {
+      if (jobDescribers.length) {
         result.push({
           displayName: 'update',
-          builds,
+          jobDescribers,
         });
       }
     }
 
     if (jobs.includes('deploy')) {
-      const builds = this.deployJobBuilder.build(projects, params);
+      const jobDescribers = this.deployJobBuilder.build(projects, params);
 
-      if (builds.length) {
+      if (jobDescribers.length) {
         result.push({
           displayName: 'deploy',
-          builds,
+          jobDescribers,
         });
       }
     }
 
     if (jobs.includes('test')) {
-      const builds = this.testJobBuilder.build(projects, params);
+      const jobDescribers = this.testJobBuilder.build(projects, params);
 
-      if (builds.length) {
+      if (jobDescribers.length) {
         result.push({
           displayName: 'test',
-          builds,
+          jobDescribers,
         });
       }
     }
