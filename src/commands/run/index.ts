@@ -9,8 +9,8 @@ import { ParamsResult } from './param-questions.model';
 import { Project, verifyProjects } from './project-questions';
 
 export async function run(inputJobs: string[], inputProjects: string[], extended: boolean) {
-  await uiManagerTest();
-  // questionnaire(inputJobs, inputProjects, extended);
+  // await uiManagerTest();
+  questionnaire(inputJobs, inputProjects, extended);
 }
 
 async function questionnaire(inputJobs: string[], inputProjects: string[], extended: boolean) {

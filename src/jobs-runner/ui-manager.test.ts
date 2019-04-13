@@ -1,9 +1,8 @@
-import * as ProgressBar from 'progress';
-import { combineLatest, interval, Observable, Subject } from 'rxjs';
-import { map, shareReplay, takeUntil, tap } from 'rxjs/operators';
-import { isJobDone, JobDone, JobProgress, JobResponse } from '../jenkins-rxjs/models';
-import { delay, processInterrupt$ } from '../jenkins-rxjs/utils';
-import { JobBatchDescriber, JobDescriber } from './index';
+import { Observable } from 'rxjs';
+import { shareReplay } from 'rxjs/operators';
+import { JobDone, JobProgress } from '../jenkins-rxjs/models';
+import { delay } from '../jenkins-rxjs/utils';
+import { JobBatchDescriber } from './index';
 import { UiManager } from './ui-manager';
 
 export async function uiManagerTest() {
@@ -71,30 +70,8 @@ function createStreamsForBatchDescriber(batchDescriber: JobBatchDescriber, uiMan
     const timeout = 2000 + Math.floor(Math.random() * 5000);
     const stream = createStream(timeout);
 
-    return display(jobDescriber, stream, uiManager);
+    return uiManager.createDisplayStream(jobDescriber, stream);
   });
-}
-
-function display(
-  jobDescriber: JobDescriber,
-  stream$: Observable<JobResponse>,
-  uiManager: UiManager,
-) {
-  const bar: ProgressBar = uiManager.createBar(jobDescriber);
-  const end$ = new Subject();
-
-  return combineLatest(stream$, interval(1000)).pipe(
-    map(([response]) => response),
-    takeUntil(processInterrupt$),
-    takeUntil(end$.pipe(takeUntil(processInterrupt$))),
-    tap((response: JobResponse) => {
-      uiManager.updateBar(bar, response);
-      if (isJobDone(response)) {
-        end$.next();
-        end$.complete();
-      }
-    }),
-  );
 }
 
 function createStream(timeout) {

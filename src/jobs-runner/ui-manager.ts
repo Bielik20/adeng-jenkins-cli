@@ -5,6 +5,8 @@ import chalk from 'chalk';
 import * as logSymbols from 'log-symbols';
 import * as MultiProgress from 'multi-progress';
 import * as ProgressBar from 'progress';
+import { combineLatest, interval, Observable, Subject } from 'rxjs';
+import { map, takeUntil, tap } from 'rxjs/operators';
 import {
   getJobProgressEstimatedRemainingTime,
   getJobProgressPercentage,
@@ -14,6 +16,7 @@ import {
   JobProgress,
   JobResponse,
 } from '../jenkins-rxjs/models';
+import { processInterrupt$ } from '../jenkins-rxjs/utils';
 import { JobBatchDescriber, JobDescriber } from './models';
 
 export class UiManager {
@@ -72,7 +75,28 @@ export class UiManager {
     });
   }
 
-  createBar(jobDescriber: JobDescriber): ProgressBar {
+  createDisplayStream(
+    jobDescriber: JobDescriber,
+    stream$: Observable<JobResponse>,
+  ): Observable<JobResponse> {
+    const bar: ProgressBar = this.createBar(jobDescriber);
+    const end$ = new Subject();
+
+    return combineLatest(stream$, interval(1000)).pipe(
+      map(([response]: [JobResponse, number]) => response),
+      takeUntil(processInterrupt$),
+      takeUntil(end$.pipe(takeUntil(processInterrupt$))),
+      tap((response: JobResponse) => {
+        this.updateBar(bar, response);
+        if (isJobDone(response)) {
+          end$.next();
+          end$.complete();
+        }
+      }),
+    );
+  }
+
+  private createBar(jobDescriber: JobDescriber): ProgressBar {
     const fillLength = this.jobNameWidth - jobDescriber.displayName.length;
     const title = ' '.repeat(fillLength) + jobDescriber.displayName;
 
@@ -84,7 +108,7 @@ export class UiManager {
     });
   }
 
-  updateBar(bar: ProgressBar, response: JobResponse): void {
+  private updateBar(bar: ProgressBar, response: JobResponse): void {
     if (isJobProgress(response)) {
       const symbol = logSymbols.info;
       const link = response.url;
