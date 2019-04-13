@@ -1,9 +1,9 @@
 import * as ansiEscapes from 'ansi-escapes';
+import { JobBatchRunner } from '../../jobs-runner/job-batch-runner';
 import { Jenkins } from '../../utils/jenkins';
 import { uiTest } from '../ui-test';
 import { Job, verifyJobs } from './job-questions';
 import { JobsBuilder } from './jobs-builder';
-import { JobsRunner } from './jobs-runner/jobs-runner';
 import { promptParams } from './param-questions';
 import { ParamsResult } from './param-questions.model';
 import { Project, verifyProjects } from './project-questions';
@@ -25,6 +25,6 @@ async function questionnaire(inputJobs: string[], inputProjects: string[], exten
   const builderResult = builder.build(jobs, projects, params);
 
   const jenkinsRxJs = await Jenkins.getJenkinsRxJs();
-  const runner = new JobsRunner(jenkinsRxJs);
+  const runner = new JobBatchRunner(jenkinsRxJs);
   await runner.runJobs(builderResult);
 }

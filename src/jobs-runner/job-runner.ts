@@ -13,15 +13,15 @@ import {
   JenkinsRxJs,
   JobDone,
   JobResponse,
-} from '../../../jenkins-rxjs';
-import { processInterrupt$ } from '../../../jenkins-rxjs/utils';
-import { millisecondsToDisplay } from '../../../utils/milliseconds-to-display';
-import { JobBuildDescriber } from '../jobs-builder';
+} from '../jenkins-rxjs';
+import { processInterrupt$ } from '../jenkins-rxjs/utils';
+import { millisecondsToDisplay } from '../utils/milliseconds-to-display';
+import { JobDescriber } from './models';
 
 export class JobRunner {
   constructor(private jenkins: JenkinsRxJs) {}
 
-  run(build: JobBuildDescriber, multi: MultiProgress): Promise<JobDone> {
+  run(build: JobDescriber, multi: MultiProgress): Promise<JobDone> {
     const stream$: Observable<JobResponse> = this.display(
       build,
       this.jenkins.job(build.opts),
@@ -33,7 +33,7 @@ export class JobRunner {
   }
 
   private display(
-    build: JobBuildDescriber,
+    build: JobDescriber,
     stream$: Observable<JobResponse>,
     multi: MultiProgress,
   ): Observable<JobResponse> {
@@ -71,7 +71,7 @@ export class JobRunner {
     );
   }
 
-  private createBar(build: JobBuildDescriber, multi: MultiProgress): ProgressBar {
+  private createBar(build: JobDescriber, multi: MultiProgress): ProgressBar {
     return multi.newBar(`${build.displayName} [:bar] :percent :remaining (:text)`, {
       complete: chalk.green('='),
       incomplete: ' ',

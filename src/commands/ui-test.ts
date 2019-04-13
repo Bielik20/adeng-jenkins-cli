@@ -17,8 +17,8 @@ import {
   JobResponse,
 } from '../jenkins-rxjs/models';
 import { delay, processInterrupt$ } from '../jenkins-rxjs/utils';
+import { JobDescriber } from '../jobs-runner';
 import { millisecondsToDisplay } from '../utils/milliseconds-to-display';
-import { JobBuildDescriber } from './run/jobs-builder';
 
 export async function uiTest() {
   const multi = new MultiProgress(process.stderr);
@@ -59,7 +59,7 @@ export async function uiTest() {
   multi.terminate();
 }
 
-function display(build: JobBuildDescriber, stream$: Observable<JobResponse>, multi) {
+function display(build: JobDescriber, stream$: Observable<JobResponse>, multi) {
   const bar: ProgressBar = createBar(build, multi);
   const end$ = new Subject();
   const time = Math.floor(Math.random() * 100) + 500;
@@ -96,7 +96,7 @@ function display(build: JobBuildDescriber, stream$: Observable<JobResponse>, mul
   );
 }
 
-function createBar(build: JobBuildDescriber, multi): ProgressBar {
+function createBar(build: JobDescriber, multi): ProgressBar {
   return multi.newBar(`${build.displayName} [:bar] :percent :remaining (:text)`, {
     complete: chalk.green('='),
     incomplete: ' ',
