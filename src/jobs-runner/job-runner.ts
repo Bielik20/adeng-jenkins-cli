@@ -10,7 +10,7 @@ export class JobRunner {
   run(jobDescriber: JobDescriber, uiManager: UiManager): Observable<JobDone> {
     const stream$: Observable<JobResponse> = uiManager.createDisplayStream(
       jobDescriber,
-      this.jenkins.job(jobDescriber.opts),
+      this.jenkins.run(jobDescriber.opts),
     );
 
     return stream$.pipe(last()) as Observable<JobDone>;

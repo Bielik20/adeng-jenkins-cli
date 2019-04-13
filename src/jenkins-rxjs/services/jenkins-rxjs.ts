@@ -1,6 +1,6 @@
 import { JenkinsPromisifiedAPI, JobBuildOptions } from 'jenkins';
 import { from, Observable, of } from 'rxjs';
-import { shareReplay, switchMap, takeUntil } from 'rxjs/operators';
+import { catchError, shareReplay, switchMap, takeUntil } from 'rxjs/operators';
 import { Subscriber } from 'rxjs/src/internal/Subscriber';
 import {
   getJobProgressEstimatedRemainingTime,
@@ -13,11 +13,12 @@ import {
 } from '../models';
 import { delay, processInterrupt$ } from '../utils';
 
+// TODO: Add delay retry to jenkins calls (test with VPN off/interrupted)
 export class JenkinsRxJs {
   constructor(private readonly jenkins: JenkinsPromisifiedAPI) {}
 
-  job(opts: JobBuildOptions): Observable<JobResponse> {
-    return from(this.jenkins.job.build(opts)).pipe(
+  run(opts: JobBuildOptions): Observable<JobResponse> {
+    return this.job(opts).pipe(
       switchMap((queueNumber: number) =>
         this.queue(queueNumber).pipe(
           switchMap((response: JobResponse) => {
@@ -29,7 +30,13 @@ export class JenkinsRxJs {
           }),
         ),
       ),
+      // TODO: Add better info about error here (test with VPN off/interrupted)
+      catchError(e => of(this.getErrorJobResponse({} as any, e))),
     );
+  }
+
+  private job(opts: JobBuildOptions) {
+    return from(this.jenkins.job.build(opts));
   }
 
   private queue(queueNumber: number): Observable<JobResponse> {
@@ -69,7 +76,7 @@ export class JenkinsRxJs {
           await delay(getJobProgressEstimatedRemainingTime(parserResult as JobProgress));
         }
       } catch (e) {
-        console.log('Error in jenkins rxjs ', e);
+        // TODO: Rethrow here with info and catch inside this.run (test with VPN off/interrupted)
         observer.next(this.getErrorJobResponse(parserResult, e));
         observer.complete();
       }

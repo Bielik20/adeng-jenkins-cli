@@ -67,12 +67,20 @@ export class UiManager {
   }
 
   printBatchError(failures: JobDone[]): void {
-    console.log(`${logSymbols.error} Error: One or more jobs has failed:`);
+    let text = `${logSymbols.error} Error: One or more jobs has failed.\n`;
     failures.forEach((failure: JobDone) => {
-      console.log('\nname: ', failure.name);
-      console.log('url: ', failure.url);
-      console.log('message: ', failure.text);
+      text += `\nname: ${failure.name}\n`;
+      text += `url: ${failure.url}\n`;
+      text += `message: ${failure.text}\n`;
     });
+
+    console.log(
+      boxen(text, {
+        padding: 1,
+        borderColor: 'red',
+        borderStyle: BorderStyle.Round,
+      }),
+    );
   }
 
   createDisplayStream(
@@ -89,8 +97,11 @@ export class UiManager {
       tap((response: JobResponse) => {
         this.updateBar(bar, response);
         if (isJobDone(response)) {
-          end$.next();
-          end$.complete();
+          // TODO: Replace this hack with something more elegant (test with VPN off)
+          setTimeout(() => {
+            end$.next();
+            end$.complete();
+          });
         }
       }),
     );
