@@ -3,10 +3,10 @@ import { combineLatest, interval, Observable, Subject } from 'rxjs';
 import { map, shareReplay, takeUntil, tap } from 'rxjs/operators';
 import { isJobDone, JobDone, JobProgress, JobResponse } from '../jenkins-rxjs/models';
 import { delay, processInterrupt$ } from '../jenkins-rxjs/utils';
-import { JobBatchDescriber, JobDescriber } from '../jobs-runner';
-import { UiManager } from '../jobs-runner/ui-manager';
+import { JobBatchDescriber, JobDescriber } from './index';
+import { UiManager } from './ui-manager';
 
-export async function uiTest() {
+export async function uiManagerTest() {
   const batchDescribers = createBatchDescribers();
   const uiManager = new UiManager(batchDescribers);
 
