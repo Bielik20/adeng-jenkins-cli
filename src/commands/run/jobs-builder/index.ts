@@ -1,2 +1,2 @@
 export * from './jobs-builder';
-export * from './job-builder-result';
+export * from '../../../jobs-runner/models';
