@@ -17,15 +17,16 @@ import {
 import { processInterrupt$ } from '../jenkins-rxjs/utils';
 import { millisecondsToDisplay } from '../utils/milliseconds-to-display';
 import { JobDescriber } from './models';
+import { UiManager } from './ui-manager';
 
 export class JobRunner {
   constructor(private jenkins: JenkinsRxJs) {}
 
-  run(build: JobDescriber, multi: MultiProgress): Promise<JobDone> {
+  run(build: JobDescriber, uiManager: UiManager): Promise<JobDone> {
     const stream$: Observable<JobResponse> = this.display(
       build,
       this.jenkins.job(build.opts),
-      multi,
+      uiManager,
     );
     const end$: Observable<JobDone> = stream$.pipe(last()) as Observable<JobDone>;
 
@@ -35,9 +36,9 @@ export class JobRunner {
   private display(
     build: JobDescriber,
     stream$: Observable<JobResponse>,
-    multi: MultiProgress,
+    uiManager: UiManager,
   ): Observable<JobResponse> {
-    const bar: ProgressBar = this.createBar(build, multi);
+    const bar: ProgressBar = this.createBar(build, uiManager);
     const end$ = new Subject();
 
     return combineLatest(stream$, interval(1000)).pipe(
