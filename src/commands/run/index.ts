@@ -1,7 +1,7 @@
 import * as ansiEscapes from 'ansi-escapes';
-import { JobBatchRunner } from '../../jobs-runner/job-batch-runner';
+import { JobBatchRunner } from '../../jobs-runner';
+import { uiManagerTest } from '../../jobs-runner/ui-manager.test';
 import { Jenkins } from '../../utils/jenkins';
-import { uiTest } from '../ui-test';
 import { Job, verifyJobs } from './job-questions';
 import { JobsBuilder } from './jobs-builder';
 import { promptParams } from './param-questions';
@@ -9,8 +9,7 @@ import { ParamsResult } from './param-questions.model';
 import { Project, verifyProjects } from './project-questions';
 
 export async function run(inputJobs: string[], inputProjects: string[], extended: boolean) {
-  await uiTest();
-  await uiTest();
+  await uiManagerTest();
   // questionnaire(inputJobs, inputProjects, extended);
 }
 
