@@ -29,7 +29,7 @@ export async function uiTest() {
     createStream(3000),
     createStream(2000),
     createStream(2500),
-    createStream(1000),
+    createStream(10000),
     createStream(4000),
   ];
 
@@ -71,24 +71,22 @@ function display(build: JobDescriber, stream$: Observable<JobResponse>, multi) {
     takeUntil(end$.pipe(takeUntil(processInterrupt$))),
     tap((response: JobResponse) => {
       if (isJobProgress(response)) {
-        bar.update(getJobProgressPercentage(response), {
-          text: response.text,
-          remaining: millisecondsToDisplay(getJobProgressEstimatedRemainingTime(response)),
-        });
-      } else if (isJobDone(response)) {
-        if (response.status === 'SUCCESS') {
-          bar.update(1, {
-            text: `${logSymbols.success} Completed`,
-            remaining: '',
-          });
-        } else {
-          bar.update(1, {
-            text: `${logSymbols.error} Failed`,
-            remaining: '',
-          });
-        }
+        const symbol = logSymbols.info;
+        const link = response.url;
+        const text = ansiEscapes.link(response.text, link);
+        const remaining = millisecondsToDisplay(getJobProgressEstimatedRemainingTime(response));
+        const message = `${symbol} ${text} ${remaining}`;
 
+        bar.update(getJobProgressPercentage(response), { message });
+      } else if (isJobDone(response)) {
+        const symbol = response.status === 'SUCCESS' ? logSymbols.success : logSymbols.error;
+        const link = response.url;
+        const text = ansiEscapes.link(response.status, link);
+        const message = `${symbol} ${text}`;
+
+        bar.update(1, { message });
         bar.terminate();
+
         end$.next();
         end$.complete();
       }
@@ -97,7 +95,7 @@ function display(build: JobDescriber, stream$: Observable<JobResponse>, multi) {
 }
 
 function createBar(build: JobDescriber, multi): ProgressBar {
-  return multi.newBar(`${build.displayName} [:bar] :percent :remaining (:text)`, {
+  return multi.newBar(`${build.displayName} [:bar] :percent (:message)`, {
     complete: chalk.green('='),
     incomplete: ' ',
     width: 50 - build.displayName.length,
