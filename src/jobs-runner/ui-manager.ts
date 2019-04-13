@@ -64,8 +64,12 @@ export class UiManager {
   }
 
   printBatchError(failures: JobDone[]): void {
-    console.log(`${logSymbols.error} Error: One or more jobs has failed with message:`);
-    failures.forEach((failure: JobDone) => console.log(`- ${failure.text}`));
+    console.log(`${logSymbols.error} Error: One or more jobs has failed:`);
+    failures.forEach((failure: JobDone) => {
+      console.log('\nname: ', failure.name);
+      console.log('url: ', failure.url);
+      console.log('message: ', failure.text);
+    });
   }
 
   createBar(jobDescriber: JobDescriber): ProgressBar {

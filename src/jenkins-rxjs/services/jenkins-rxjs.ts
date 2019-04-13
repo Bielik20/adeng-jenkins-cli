@@ -45,11 +45,19 @@ export class JenkinsRxJs {
     parser: (res: T) => JobResponse,
   ): Observable<JobResponse> {
     return Observable.create(async (observer: Subscriber<JobResponse>) => {
+      let parserResult: JobResponse = {
+        name: 'JOB',
+        url: '',
+        id: -1,
+        text: 'Unexpected error occurred',
+        status: 'FAILURE',
+      };
+
       try {
         while (true) {
           const actionResponse: T = await action();
-          const parserResult: JobResponse = parser(actionResponse);
 
+          parserResult = parser(actionResponse);
           observer.next(parserResult);
 
           if (isJobDone(parserResult)) {
@@ -62,7 +70,7 @@ export class JenkinsRxJs {
         }
       } catch (e) {
         console.log('Error in jenkins rxjs ', e);
-        observer.next(this.getErrorJobResponse());
+        observer.next(this.getErrorJobResponse(parserResult, e));
         observer.complete();
       }
     }).pipe(
@@ -71,14 +79,13 @@ export class JenkinsRxJs {
     );
   }
 
-  private getErrorJobResponse(): JobDone {
+  private getErrorJobResponse(parserResult: JobResponse, e: Error): JobDone {
     // TODO: declare parserResult outside try so that you have access to it here
     return {
-      name: 'JOB',
-      url: '',
-      text: 'Unexpected error occurred',
-      id: 0,
+      ...parserResult,
+      text: `Unexpected error occurred:\n- name: ${e.name}\n- message: ${e.message}`,
       status: 'FAILURE',
+      id: (parserResult as JobDone).id || -1,
     };
   }
 }
