@@ -35,12 +35,18 @@ export class UiManager {
 
   printBatchHeader(batchDescriber: JobBatchDescriber): void {
     const fillLength = this.batchNameWidth - batchDescriber.displayName.length;
-    const title = batchDescriber.displayName + ' '.repeat(fillLength);
+    const title: string = batchDescriber.displayName;
 
     process.stdout.write(ansiEscapes.cursorHide);
     console.log(
       boxen(title, {
-        padding: { left: 1, right: 1, bottom: 0, top: 0 },
+        padding: {
+          left: 1 + Math.floor(fillLength / 2),
+          right: 1 + Math.ceil(fillLength / 2),
+          bottom: 0,
+          top: 0,
+        },
+        borderColor: 'blue',
         borderStyle: BorderStyle.Round,
       }),
     );
@@ -53,7 +59,7 @@ export class UiManager {
     this.batchMulti.terminate();
 
     process.stdout.write(ansiEscapes.cursorRestorePosition);
-    process.stdout.write(ansiEscapes.cursorDown(results.length) + ansiEscapes.cursorLeft);
+    process.stdout.write(ansiEscapes.cursorDown(results.length + 1) + ansiEscapes.cursorLeft);
     process.stdout.write(ansiEscapes.cursorShow);
   }
 
@@ -64,7 +70,7 @@ export class UiManager {
 
   createBar(jobDescriber: JobDescriber): ProgressBar {
     const fillLength = this.jobNameWidth - jobDescriber.displayName.length;
-    const title = jobDescriber.displayName + ' '.repeat(fillLength);
+    const title = ' '.repeat(fillLength) + jobDescriber.displayName;
 
     return this.batchMulti.newBar(`${title} [:bar] :percent (:message)`, {
       complete: chalk.green('='),

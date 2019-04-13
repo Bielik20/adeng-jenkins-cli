@@ -61,7 +61,7 @@ export class JenkinsRxJs {
           await delay(getJobProgressEstimatedRemainingTime(parserResult as JobProgress));
         }
       } catch (e) {
-        console.log(e);
+        console.log('Error in jenkins rxjs ', e);
         observer.next(this.getErrorJobResponse());
         observer.complete();
       }

@@ -1,91 +1,95 @@
-import * as ansiEscapes from 'ansi-escapes';
-import * as boxen from 'boxen';
-import { BorderStyle } from 'boxen';
-import chalk from 'chalk';
-import * as logSymbols from 'log-symbols';
-import * as MultiProgress from 'multi-progress';
 import * as ProgressBar from 'progress';
 import { combineLatest, interval, Observable, Subject } from 'rxjs';
-import { last, map, shareReplay, takeUntil, tap } from 'rxjs/operators';
-import {
-  getJobProgressEstimatedRemainingTime,
-  getJobProgressPercentage,
-  isJobDone,
-  isJobProgress,
-  JobDone,
-  JobProgress,
-  JobResponse,
-} from '../jenkins-rxjs/models';
+import { map, shareReplay, takeUntil, tap } from 'rxjs/operators';
+import { isJobDone, JobDone, JobProgress, JobResponse } from '../jenkins-rxjs/models';
 import { delay, processInterrupt$ } from '../jenkins-rxjs/utils';
-import { JobDescriber } from '../jobs-runner';
+import { JobBatchDescriber, JobDescriber } from '../jobs-runner';
+import { UiManager } from '../jobs-runner/ui-manager';
 
 export async function uiTest() {
-  const multi = new MultiProgress(process.stderr);
-  const build: any = {
-    displayName: 'test',
-  };
-  const streams = [
-    createStream(3000),
-    createStream(2000),
-    createStream(2500),
-    createStream(10000),
-    createStream(4000),
-  ];
+  const batchDescribers = createBatchDescribers();
+  const uiManager = new UiManager(batchDescribers);
 
-  console.log(
-    boxen('Job', {
-      padding: { left: 1, right: 1, bottom: 0, top: 0 },
-      borderStyle: BorderStyle.Round,
-    }),
-  );
-  process.stdout.write(ansiEscapes.cursorSavePosition);
-  process.stdout.write(ansiEscapes.cursorHide);
+  for (const batchDescriber of batchDescribers) {
+    uiManager.printBatchHeader(batchDescriber);
 
-  try {
-    const promises = streams.map(s =>
-      display(build, s, multi)
-        .pipe(last())
-        .toPromise(),
+    const promises = createStreamsForBatchDescriber(batchDescriber, uiManager).map(stream =>
+      stream.toPromise(),
     );
-    await Promise.all(promises);
-  } catch (e) {
-    console.log(e);
-  }
+    const results: JobDone[] = (await Promise.all(promises)) as any;
 
-  process.stdout.write(ansiEscapes.cursorRestorePosition);
-  process.stdout.write(ansiEscapes.cursorDown(streams.length) + ansiEscapes.cursorLeft);
-  process.stdout.write(ansiEscapes.cursorShow);
-  multi.terminate();
+    uiManager.printBatchFooter(results);
+  }
 }
 
-function display(build: JobDescriber, stream$: Observable<JobResponse>, multi) {
-  const bar: ProgressBar = createBar(build, multi);
-  const end$ = new Subject();
-  const time = Math.floor(Math.random() * 100) + 500;
-  // console.log(time);
+function createBatchDescribers(): JobBatchDescriber[] {
+  return [
+    {
+      displayName: 'odd',
+      builds: [
+        {
+          displayName: 'app',
+          opts: {} as any,
+        },
+        {
+          displayName: 'mobile-wiki',
+          opts: {} as any,
+        },
+        {
+          displayName: 'f2',
+          opts: {} as any,
+        },
+      ],
+    },
+    {
+      displayName: 'even',
+      builds: [
+        {
+          displayName: 'app',
+          opts: {} as any,
+        },
+        {
+          displayName: 'mobile-wiki',
+          opts: {} as any,
+        },
+      ],
+    },
+    {
+      displayName: 'loooong-even',
+      builds: [
+        {
+          displayName: 'loooong display name',
+          opts: {} as any,
+        },
+      ],
+    },
+  ];
+}
 
-  return combineLatest(stream$, interval(time)).pipe(
+function createStreamsForBatchDescriber(batchDescriber: JobBatchDescriber, uiManager: UiManager) {
+  return batchDescriber.builds.map(jobDescriber => {
+    const timeout = 2000 + Math.floor(Math.random() * 5000);
+    const stream = createStream(timeout);
+
+    return display(jobDescriber, stream, uiManager);
+  });
+}
+
+function display(
+  jobDescriber: JobDescriber,
+  stream$: Observable<JobResponse>,
+  uiManager: UiManager,
+) {
+  const bar: ProgressBar = uiManager.createBar(jobDescriber);
+  const end$ = new Subject();
+
+  return combineLatest(stream$, interval(1000)).pipe(
     map(([response]) => response),
     takeUntil(processInterrupt$),
     takeUntil(end$.pipe(takeUntil(processInterrupt$))),
     tap((response: JobResponse) => {
-      if (isJobProgress(response)) {
-        const symbol = logSymbols.info;
-        const link = response.url;
-        const text = ansiEscapes.link(response.text, link);
-        const remaining = millisecondsToDisplay(getJobProgressEstimatedRemainingTime(response));
-        const message = `${symbol} ${text} ${remaining}`;
-
-        bar.update(getJobProgressPercentage(response), { message });
-      } else if (isJobDone(response)) {
-        const symbol = response.status === 'SUCCESS' ? logSymbols.success : logSymbols.error;
-        const link = response.url;
-        const text = ansiEscapes.link(response.status, link);
-        const message = `${symbol} ${text}`;
-
-        bar.update(1, { message });
-        bar.terminate();
-
+      uiManager.updateBar(bar, response);
+      if (isJobDone(response)) {
         end$.next();
         end$.complete();
       }
@@ -93,18 +97,9 @@ function display(build: JobDescriber, stream$: Observable<JobResponse>, multi) {
   );
 }
 
-function createBar(build: JobDescriber, multi): ProgressBar {
-  return multi.newBar(`${build.displayName} [:bar] :percent (:message)`, {
-    complete: chalk.green('='),
-    incomplete: ' ',
-    width: 50 - build.displayName.length,
-    total: 100,
-  });
-}
-
 function createStream(timeout) {
   const jobProgress: JobProgress = {
-    text: 'lorem impus',
+    text: 'build in progress',
     estimatedEnd: +new Date() + timeout,
     started: +new Date(),
     status: 'PROGRESS',
@@ -122,10 +117,4 @@ function createStream(timeout) {
     observer.next(jobDone);
     observer.complete();
   }).pipe(shareReplay(1));
-}
-
-function millisecondsToDisplay(milliseconds: number): string {
-  const minutes: number = Math.floor(milliseconds / 60000);
-  const seconds: number = +((milliseconds % 60000) / 1000).toFixed(0);
-  return minutes + ' min' + (seconds < 1 ? '' : ` ${seconds} sec`);
 }
