@@ -14,30 +14,24 @@ export async function start() {
 
   program.version(packageJson.version).description(packageJson.description);
   program
-    .description('Run Jenkins jobs')
     .command('run')
     .alias('r')
+    .description('Run Jenkins jobs')
     .option('-j, --jobs <items>', 'Jenkins jobs to run', list, [])
     .option('-p, --projects <items>', 'Project to include', list, [])
     .option('-e, --extended', 'Whether to show extended options', false)
-    .action(({ jobs, projects, extended }) => {
-      run(jobs, projects, extended);
-    });
+    .action(({ jobs, projects, extended }) => run(jobs, projects, extended));
   program
-    .description('Choose your default sandbox')
     .command('sandbox')
     .alias('s')
+    .description('Choose your default sandbox')
     .option('name', 'Name of the sandbox')
-    .action(input => {
-      sandbox(input);
-    });
+    .action(input => sandbox(input));
   program
-    .description('Login to Jenkins')
     .command('login')
     .alias('l')
-    .action(() => {
-      login();
-    });
+    .description('Login to Jenkins')
+    .action(() => login());
 
   if (process.argv.length === 2) {
     process.argv.push('-h');
