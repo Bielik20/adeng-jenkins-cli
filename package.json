@@ -19,7 +19,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "tslint --project .",
-    "postinstall": "npm run build"
+    "prepare": "npm run build"
   },
   "dependencies": {
     "ansi-escapes": "^4.1.0",
