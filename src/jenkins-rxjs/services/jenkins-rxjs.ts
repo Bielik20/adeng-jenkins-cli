@@ -35,7 +35,7 @@ export class JenkinsRxJs {
     );
   }
 
-  private job(opts: JobBuildOptions) {
+  private job(opts: JobBuildOptions): Observable<number> {
     return from(this.jenkins.job.build(opts));
   }
 

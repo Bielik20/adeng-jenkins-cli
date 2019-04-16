@@ -1,31 +1,32 @@
 import { Observable } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
-import { JobDone, JobProgress } from '../jenkins-rxjs/models';
+import { JobDone, JobProgress, JobResponse } from '../jenkins-rxjs/models';
 import { delay } from '../jenkins-rxjs/utils';
-import { JobBatchDescriber } from './index';
+import { JobBatchDescriptor } from './index';
 import { UiManager } from './ui-manager';
 
 export async function uiManagerTest() {
-  const batchDescribers = createBatchDescribers();
+  const batchDescribers: JobBatchDescriptor[] = createBatchDescriptors();
   const uiManager = new UiManager(batchDescribers);
 
   for (const batchDescriber of batchDescribers) {
     uiManager.printBatchHeader(batchDescriber);
 
-    const promises = createStreamsForBatchDescriber(batchDescriber, uiManager).map(stream =>
-      stream.toPromise(),
-    );
+    const promises: Promise<JobResponse>[] = createStreamsForBatchDescriber(
+      batchDescriber,
+      uiManager,
+    ).map(stream => stream.toPromise());
     const results: JobDone[] = (await Promise.all(promises)) as any;
 
     uiManager.printBatchFooter(results);
   }
 }
 
-function createBatchDescribers(): JobBatchDescriber[] {
+function createBatchDescriptors(): JobBatchDescriptor[] {
   return [
     {
       displayName: 'odd',
-      jobDescribers: [
+      jobDescriptor: [
         {
           displayName: 'app',
           opts: {} as any,
@@ -42,7 +43,7 @@ function createBatchDescribers(): JobBatchDescriber[] {
     },
     {
       displayName: 'even',
-      jobDescribers: [
+      jobDescriptor: [
         {
           displayName: 'app',
           opts: {} as any,
@@ -55,7 +56,7 @@ function createBatchDescribers(): JobBatchDescriber[] {
     },
     {
       displayName: 'loooong-even',
-      jobDescribers: [
+      jobDescriptor: [
         {
           displayName: 'loooong display name',
           opts: {} as any,
@@ -65,16 +66,19 @@ function createBatchDescribers(): JobBatchDescriber[] {
   ];
 }
 
-function createStreamsForBatchDescriber(batchDescriber: JobBatchDescriber, uiManager: UiManager) {
-  return batchDescriber.jobDescribers.map(jobDescriber => {
-    const timeout = 2000 + Math.floor(Math.random() * 5000);
-    const stream = createStream(timeout);
+function createStreamsForBatchDescriber(
+  jobBatchDescriptor: JobBatchDescriptor,
+  uiManager: UiManager,
+): Observable<JobResponse>[] {
+  return jobBatchDescriptor.jobDescriptor.map(jobDescriber => {
+    const timeout: number = 2000 + Math.floor(Math.random() * 5000);
+    const stream: Observable<JobProgress> = createStream(timeout);
 
     return uiManager.createDisplayStream(jobDescriber, stream);
   });
 }
 
-function createStream(timeout) {
+function createStream(timeout): Observable<JobProgress> {
   const jobProgress: JobProgress = {
     text: 'build in progress',
     estimatedEnd: +new Date() + timeout,
@@ -88,6 +92,7 @@ function createStream(timeout) {
     status: 'SUCCESS',
     id: 0,
   };
+
   return Observable.create(async observer => {
     observer.next(jobProgress);
     await delay(timeout);

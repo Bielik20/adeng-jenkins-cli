@@ -17,28 +17,28 @@ import {
   JobResponse,
 } from '../jenkins-rxjs/models';
 import { processInterrupt$ } from '../jenkins-rxjs/utils';
-import { JobBatchDescriber, JobDescriber } from './models';
+import { JobBatchDescriptor, JobDescriptor } from './models';
 
 export class UiManager {
-  batchNameWidth: number;
-  jobNameWidth: number;
+  batchMaxNameWidth: number;
+  jobMaxNameWidth: number;
   batchMulti: MultiProgress;
 
-  constructor(batchDescribers: JobBatchDescriber[]) {
-    this.batchNameWidth = batchDescribers
-      .map((batchDescriber: JobBatchDescriber) => batchDescriber.displayName.length)
+  constructor(batchDescriptors: JobBatchDescriptor[]) {
+    this.batchMaxNameWidth = batchDescriptors
+      .map((batchDescriptor: JobBatchDescriptor) => batchDescriptor.displayName.length)
       .reduce((prev, curr) => (prev > curr ? prev : curr), 0);
 
-    this.jobNameWidth = batchDescribers
-      .map((batchDescriber: JobBatchDescriber) => batchDescriber.jobDescribers)
+    this.jobMaxNameWidth = batchDescriptors
+      .map((batchDescriptor: JobBatchDescriptor) => batchDescriptor.jobDescriptor)
       .reduce((prev, curr) => [...prev, ...curr], [])
-      .map((jobDescriber: JobDescriber) => jobDescriber.displayName.length)
+      .map((jobDescriptor: JobDescriptor) => jobDescriptor.displayName.length)
       .reduce((prev, curr) => (prev > curr ? prev : curr), 0);
   }
 
-  printBatchHeader(batchDescriber: JobBatchDescriber): void {
-    const fillLength = this.batchNameWidth - batchDescriber.displayName.length;
-    const title: string = batchDescriber.displayName;
+  printBatchHeader(batchDescriptor: JobBatchDescriptor): void {
+    const fillLength: number = this.batchMaxNameWidth - batchDescriptor.displayName.length;
+    const title: string = batchDescriptor.displayName;
 
     process.stdout.write(ansiEscapes.cursorHide);
     console.log(
@@ -84,10 +84,10 @@ export class UiManager {
   }
 
   createDisplayStream(
-    jobDescriber: JobDescriber,
+    jobDescriptor: JobDescriptor,
     stream$: Observable<JobResponse>,
   ): Observable<JobResponse> {
-    const bar: ProgressBar = this.createBar(jobDescriber);
+    const bar: ProgressBar = this.createBar(jobDescriptor);
     const end$ = new Subject();
 
     return combineLatest(stream$, interval(1000)).pipe(
@@ -107,9 +107,9 @@ export class UiManager {
     );
   }
 
-  private createBar(jobDescriber: JobDescriber): ProgressBar {
-    const fillLength = this.jobNameWidth - jobDescriber.displayName.length;
-    const title = ' '.repeat(fillLength) + jobDescriber.displayName;
+  private createBar(jobDescriptor: JobDescriptor): ProgressBar {
+    const fillLength: number = this.jobMaxNameWidth - jobDescriptor.displayName.length;
+    const title: string = ' '.repeat(fillLength) + jobDescriptor.displayName;
 
     return this.batchMulti.newBar(`${title} [:bar] :percent (:message)`, {
       complete: chalk.green('='),
@@ -121,20 +121,20 @@ export class UiManager {
 
   private updateBar(bar: ProgressBar, response: JobResponse): void {
     if (isJobProgress(response)) {
-      const symbol = logSymbols.info;
-      const link = response.url;
-      const text = ansiEscapes.link(response.text, link);
-      const eta = this.createETA(response);
-      const message = `${symbol} ${text} ${eta}`;
+      const symbol: string = logSymbols.info;
+      const link: string = response.url;
+      const text: string = ansiEscapes.link(response.text, link);
+      const eta: string = this.createETA(response);
+      const message: string = `${symbol} ${text} ${eta}`;
 
       return bar.update(getJobProgressPercentage(response), { message });
     }
 
     if (isJobDone(response)) {
-      const symbol = response.status === 'SUCCESS' ? logSymbols.success : logSymbols.error;
-      const link = response.url;
-      const text = ansiEscapes.link(response.status, link);
-      const message = `${symbol} ${text}`;
+      const symbol: string = response.status === 'SUCCESS' ? logSymbols.success : logSymbols.error;
+      const link: string = response.url;
+      const text: string = ansiEscapes.link(response.status, link);
+      const message: string = `${symbol} ${text}`;
 
       bar.update(1, { message });
       bar.terminate();
@@ -151,6 +151,7 @@ export class UiManager {
   private millisecondsToDisplay(milliseconds: number): string {
     const minutes: number = Math.floor(milliseconds / 60000);
     const seconds: number = +((milliseconds % 60000) / 1000).toFixed(0);
+
     return minutes + ' min' + (seconds < 1 ? '' : ` ${seconds} sec`);
   }
 }

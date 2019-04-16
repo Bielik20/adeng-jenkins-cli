@@ -1,6 +1,6 @@
-import { ParamsResult } from '../param-questions.model';
-import { Project } from '../project-questions';
-import { JobDescriber } from './models';
+import { ParamsResult } from '../questions/param-questions.model';
+import { Project } from '../questions/project-questions';
+import { JobDescriptor } from './models';
 
 interface DeployJobAppParams {
   sandbox: string;
@@ -24,9 +24,9 @@ export class DeployJobBuilder {
     ['mobile-wiki', 'mobile-wiki-deploy-sandbox'],
   ]);
 
-  build(projects: Project[], params: ParamsResult): JobDescriber[] {
+  build(projects: Project[], params: ParamsResult): JobDescriptor[] {
     return projects
-      .filter(project => this.projectNameMap.has(project))
+      .filter((project: Project) => this.projectNameMap.has(project))
       .map((project: Project) => ({
         displayName: project,
         opts: {

@@ -1,6 +1,6 @@
 import * as inquirer from 'inquirer';
-import { sandboxes } from '../../utils/sandbox';
-import { store } from '../../utils/store';
+import { sandboxes } from '../../../utils/sandbox';
+import { store } from '../../../utils/store';
 import { Job } from './job-questions';
 import { ParamsResult } from './param-questions.model';
 import { availableProjects, Project } from './project-questions';

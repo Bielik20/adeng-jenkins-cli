@@ -1,11 +1,11 @@
 import { JobBuildOptions } from 'jenkins';
 
-export interface JobBatchDescriber<T = string, P = string> {
+export interface JobBatchDescriptor<T = string, P = string> {
   displayName: T;
-  jobDescribers: JobDescriber<P>[];
+  jobDescriptor: JobDescriptor<P>[];
 }
 
-export interface JobDescriber<T = string> {
+export interface JobDescriptor<T = string> {
   displayName: T;
   opts: JobBuildOptions;
 }

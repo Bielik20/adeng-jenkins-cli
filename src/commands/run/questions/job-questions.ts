@@ -1,5 +1,5 @@
 import * as inquirer from 'inquirer';
-import { filterList } from '../../utils/filter-list';
+import { filterList } from '../../../utils/filter-list';
 
 export type Job = 'update' | 'deploy' | 'test';
 export const availableJobs: Job[] = ['update', 'deploy', 'test'];

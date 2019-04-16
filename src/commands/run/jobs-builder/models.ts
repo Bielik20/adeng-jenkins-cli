@@ -1,9 +1,9 @@
 import {
-  JobBatchDescriber as GenericJobBatchDescriber,
-  JobDescriber as GenericJobDescriber,
+  JobBatchDescriptor as GenericJobBatchDescriber,
+  JobDescriptor as GenericJobDescriber,
 } from '../../../jobs-runner';
-import { Job } from '../job-questions';
-import { Project } from '../project-questions';
+import { Job } from '../questions/job-questions';
+import { Project } from '../questions/project-questions';
 
-export type JobBatchDescriber = GenericJobBatchDescriber<Job, Project>;
-export type JobDescriber = GenericJobDescriber<Project>;
+export type JobBatchDescriptor = GenericJobBatchDescriber<Job, Project>;
+export type JobDescriptor = GenericJobDescriber<Project>;

@@ -1,10 +1,11 @@
 import axios from 'axios';
 import * as branch from 'git-branch';
 
-export function adenToUpper(input: string) {
+export function adenToUpper(input: string): string {
   if (input.indexOf('aden-') === 0) {
     return `ADEN-${input.slice(5)}`;
   }
+
   return input;
 }
 
@@ -29,7 +30,7 @@ export async function replaceLatestWithAdEngineVersion(input: string) {
     return input;
   }
 
-  const response = await axios.get(
+  const response: any = await axios.get(
     'https://raw.githubusercontent.com/Wikia/ad-engine/dev/package.json',
   );
 

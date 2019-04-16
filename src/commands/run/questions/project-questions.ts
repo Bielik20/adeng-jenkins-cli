@@ -1,5 +1,5 @@
 import * as inquirer from 'inquirer';
-import { filterList } from '../../utils/filter-list';
+import { filterList } from '../../../utils/filter-list';
 
 export type Project = 'app' | 'mobile-wiki' | 'f2';
 export const availableProjects: Project[] = ['app', 'mobile-wiki', 'f2'];
