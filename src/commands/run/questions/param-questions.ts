@@ -29,7 +29,7 @@ export async function promptParams(
   const result: ParamsResult = await inquirer.prompt<ParamsResult>(paramQuestions);
 
   result.datacenter = result.datacenter || 'sjc';
-  result.debug = result.debug || false;
+  result.debug = typeof result.debug === 'boolean' ? result.debug : true;
   result.fandomEnvironment = result.fandomEnvironment || 'sandbox-adeng';
   result.configBranch = result.configBranch || 'dev';
 
@@ -123,7 +123,7 @@ const questions: FilterParamQuestion[] = [
     name: 'debug',
     type: 'confirm',
     message: 'Branch for Crowdin translations (leave empty if translations update not needed)',
-    default: false,
+    default: true,
     destined: {
       jobs: ['update'],
       projects: ['app'],
