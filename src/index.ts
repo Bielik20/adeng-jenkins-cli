@@ -5,12 +5,14 @@ import { textSync } from 'figlet';
 import { login } from './commands/login';
 import { run } from './commands/run';
 import { sandbox } from './commands/sandbox';
+import { checkVersion } from './utils/check-version';
 import { list } from './utils/list';
 import { packageJson } from './utils/package';
 
 export async function start() {
   clear();
   console.log(chalk.yellow(textSync('AdEng Jenkins', { horizontalLayout: 'full' })), '\n');
+  checkVersion();
 
   program.version(packageJson.version).description(packageJson.description);
   program
