@@ -1,6 +1,6 @@
 {
   "name": "adeng-jenkins-cli",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A CLI app that helps you deal with jenkins.",
   "license": "MIT",
   "homepage": "https://github.com/Bielik20/adeng-jenkins-cli#readme",
