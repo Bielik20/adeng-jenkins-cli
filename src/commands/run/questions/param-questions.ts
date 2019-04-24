@@ -172,7 +172,13 @@ const questions: FilterParamQuestion[] = [
     name: 'name',
     message: 'Custom name which will be added to tab name',
     validate: requiredInput,
-    default: (answers: ParamsResult) => answers.branch || answers.sandbox,
+    default: (answers: ParamsResult) => {
+      const userInitials: string = store.username.slice(0, 2);
+
+      return answers.branch
+        ? `${answers.branch}-${userInitials}`
+        : `${store.sandbox}-${userInitials}`;
+    },
     destined: {
       jobs: ['test'],
       projects: availableProjects,
