@@ -39,7 +39,9 @@ export class JobsBuilder {
     if (jobs.includes('test')) {
       const jobDescriptors: JobDescriptor[] = this.testJobBuilder.build(projects, params);
 
-      if (jobDescriptors.length) {
+      if (
+        jobDescriptors.some(jobDescriptor => !!jobDescriptor.opts.parameters['tabs-to-trigger'])
+      ) {
         batchDescriptors.push({
           displayName: 'test',
           jobDescriptor: jobDescriptors,

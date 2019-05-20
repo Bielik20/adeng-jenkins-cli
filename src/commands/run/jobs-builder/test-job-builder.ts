@@ -21,7 +21,7 @@ export class TestJobBuilder {
 
   build(projects: Project[], params: ParamsResult): JobDescriptor[] {
     const result: JobDescriptor = {
-      displayName: projects.join(', ') as any,
+      displayName: projects.filter(project => this.projectNameMap.has(project)).join(', ') as any,
       opts: {
         name: 'ads-synthetic-run',
         parameters: this.mapParams(projects, params),

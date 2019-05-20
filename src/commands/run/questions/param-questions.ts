@@ -85,7 +85,7 @@ const questions: FilterParamQuestion[] = [
     default: store.sandbox,
     destined: {
       jobs: ['deploy', 'test'],
-      projects: availableProjects,
+      projects: ['app', 'mobile-wiki', 'f2'],
       extended: false,
     },
   },
@@ -135,7 +135,7 @@ const questions: FilterParamQuestion[] = [
     message: 'Branch for Tests',
     destined: {
       jobs: ['test'],
-      projects: availableProjects,
+      projects: ['app', 'mobile-wiki', 'f2'],
       extended: true,
     },
   },
@@ -145,7 +145,7 @@ const questions: FilterParamQuestion[] = [
     default: `cb=${+new Date()}`,
     destined: {
       jobs: ['test'],
-      projects: availableProjects,
+      projects: ['app', 'mobile-wiki', 'f2'],
       extended: false,
     },
   },
@@ -155,7 +155,7 @@ const questions: FilterParamQuestion[] = [
     default: 'sandbox-adeng',
     destined: {
       jobs: ['test'],
-      projects: availableProjects,
+      projects: ['app', 'mobile-wiki', 'f2'],
       extended: true,
     },
   },
@@ -164,7 +164,7 @@ const questions: FilterParamQuestion[] = [
     message: 'Additional browser extenstions e.g. adblock',
     destined: {
       jobs: ['test'],
-      projects: availableProjects,
+      projects: ['app', 'mobile-wiki', 'f2'],
       extended: true,
     },
   },
@@ -181,7 +181,7 @@ const questions: FilterParamQuestion[] = [
     },
     destined: {
       jobs: ['test'],
-      projects: availableProjects,
+      projects: ['app', 'mobile-wiki', 'f2'],
       extended: false,
     },
   },
