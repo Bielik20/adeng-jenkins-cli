@@ -13,6 +13,10 @@ Resources:
 
 - `npm i -g adeng-jenkins-cli`
 
+## How to use
+
+- `jenkins -h` <- it will give you list of commands
+
 ## Development Guide
 
 - `npm ci`
