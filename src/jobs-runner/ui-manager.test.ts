@@ -55,7 +55,7 @@ function createBatchDescriptors(): JobBatchDescriptor[] {
       ],
     },
     {
-      displayName: 'loooong-even',
+      displayName: 'loooong',
       jobDescriptor: [
         {
           displayName: 'loooong display name',
