@@ -177,7 +177,7 @@ const questions: FilterParamQuestion[] = [
 
       return answers.branch
         ? `${answers.branch}-${userInitials}`
-        : `${store.sandbox}-${userInitials}`;
+        : `${answers.sandbox}-${userInitials}`;
     },
     destined: {
       jobs: ['test'],
