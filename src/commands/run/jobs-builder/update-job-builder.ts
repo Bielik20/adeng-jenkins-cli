@@ -12,7 +12,6 @@ export class UpdateJobBuilder {
     ['app', 'update_dependencies_app'],
     ['mobile-wiki', 'update_dependencies_mobilewiki'],
     ['f2', 'update_dependencies_f2'],
-    ['gamepedia', 'update_dependencies_gamepedia_ads'],
   ]);
 
   build(projects: Project[], params: ParamsResult): JobDescriptor[] {
