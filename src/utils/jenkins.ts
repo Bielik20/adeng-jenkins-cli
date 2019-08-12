@@ -1,7 +1,7 @@
-import { JenkinsPromisifiedAPI } from 'jenkins';
 import * as createJenkins from 'jenkins';
+import { JenkinsPromisifiedAPI } from 'jenkins';
+import { JenkinsRxJs } from 'jenkins-rxjs';
 import { ensureAuthenticated } from '../commands/login';
-import { JenkinsRxJs } from '../jenkins-rxjs';
 import { store } from './store';
 
 export abstract class Jenkins {

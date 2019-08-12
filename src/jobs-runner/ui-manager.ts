@@ -2,11 +2,6 @@ import * as ansiEscapes from 'ansi-escapes';
 import * as boxen from 'boxen';
 import { BorderStyle } from 'boxen';
 import chalk from 'chalk';
-import * as logSymbols from 'log-symbols';
-import * as MultiProgress from 'multi-progress';
-import * as ProgressBar from 'progress';
-import { combineLatest, interval, Observable, Subject } from 'rxjs';
-import { map, takeUntil, tap } from 'rxjs/operators';
 import {
   getJobProgressEstimatedRemainingTime,
   getJobProgressPercentage,
@@ -15,9 +10,14 @@ import {
   JobDone,
   JobProgress,
   JobResponse,
-} from '../jenkins-rxjs/models';
-import { processInterrupt$ } from '../jenkins-rxjs/utils';
+} from 'jenkins-rxjs';
+import * as logSymbols from 'log-symbols';
+import * as MultiProgress from 'multi-progress';
+import * as ProgressBar from 'progress';
+import { combineLatest, interval, Observable, Subject } from 'rxjs';
+import { map, takeUntil, tap } from 'rxjs/operators';
 import { JobBatchDescriptor, JobDescriptor } from './models';
+import { processInterrupt$ } from './process-interrupt';
 
 export class UiManager {
   batchMaxNameWidth: number;

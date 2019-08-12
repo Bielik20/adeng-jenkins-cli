@@ -1,7 +1,6 @@
 import * as ansiEscapes from 'ansi-escapes';
-import { Observable } from 'rxjs';
+import { Observable, Subscriber } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
-import { Subscriber } from 'rxjs/src/internal/Subscriber';
 
 export const processInterrupt$ = Observable.create((observer: Subscriber<void>) => {
   process.on('exit', () => {

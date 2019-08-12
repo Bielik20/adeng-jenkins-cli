@@ -1,7 +1,8 @@
+import { JenkinsRxJs, JobDone, JobResponse } from 'jenkins-rxjs';
 import { combineLatest, Observable } from 'rxjs';
-import { last } from 'rxjs/operators';
-import { JenkinsRxJs, JobDone, JobResponse } from '../jenkins-rxjs';
+import { last, takeUntil } from 'rxjs/operators';
 import { JobBatchDescriptor, JobDescriptor } from './models';
+import { processInterrupt$ } from './process-interrupt';
 import { UiManager } from './ui-manager';
 
 export class JobBatchRunner {
@@ -36,7 +37,7 @@ export class JobBatchRunner {
   private mapJob(jobDescriptor: JobDescriptor, uiManager: UiManager): Observable<JobDone> {
     const stream$: Observable<JobResponse> = uiManager.createDisplayStream(
       jobDescriptor,
-      this.jenkins.run(jobDescriptor.opts),
+      this.jenkins.run(jobDescriptor.opts).pipe(takeUntil(processInterrupt$)),
     );
 
     return stream$.pipe(last()) as Observable<JobDone>;

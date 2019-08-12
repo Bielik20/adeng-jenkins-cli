@@ -1,9 +1,12 @@
+import { JobDone, JobProgress, JobResponse } from 'jenkins-rxjs';
 import { Observable } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
-import { JobDone, JobProgress, JobResponse } from '../jenkins-rxjs/models';
-import { delay } from '../jenkins-rxjs/utils';
 import { JobBatchDescriptor } from './index';
 import { UiManager } from './ui-manager';
+
+function delay(milliseconds: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
 
 export async function uiManagerTest() {
   const batchDescribers: JobBatchDescriptor[] = createBatchDescriptors();
