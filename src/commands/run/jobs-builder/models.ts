@@ -1,7 +1,7 @@
 import {
   JobBatchDescriptor as GenericJobBatchDescriber,
   JobDescriptor as GenericJobDescriber,
-} from '../../../jobs-runner';
+} from 'jenkins-jobs-runner';
 import { Job } from '../questions/job-questions';
 import { Project } from '../questions/project-questions';
 

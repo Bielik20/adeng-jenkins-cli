@@ -14,8 +14,6 @@ export async function start() {
   console.log(chalk.yellow(textSync('AdEng Jenkins', { horizontalLayout: 'full' })), '\n');
   checkVersion();
 
-  console.log('bielik');
-
   program.version(packageJson.version).description(packageJson.description);
   program
     .command('run')

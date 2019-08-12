@@ -1,13 +1,12 @@
 import * as ansiEscapes from 'ansi-escapes';
-import { JobBatchRunner } from '../../jobs-runner';
-import { uiManagerTest } from '../../jobs-runner/ui-manager.test';
+import { JobBatchRunner, uiManagerSimulator } from 'jenkins-jobs-runner';
 import { Jenkins } from '../../utils/jenkins';
 import { JobsBuilder } from './jobs-builder';
 import { JobBatchDescriptor } from './jobs-builder/models';
 import { Job, ParamsResult, Project, promptParams, verifyJobs, verifyProjects } from './questions';
 
 export async function run(inputJobs: string[], inputProjects: string[], extended: boolean) {
-  // await uiManagerTest();
+  // await uiManagerSimulator();
   questionnaire(inputJobs, inputProjects, extended);
 }
 
