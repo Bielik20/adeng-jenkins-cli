@@ -34,13 +34,21 @@ export class TestJobBuilder {
   private mapParams(projects: Project[], params: ParamsResult): TestJobParams {
     return {
       env: params.sandbox,
-      branch: params.testBranch,
+      branch: this.ensureOrigin(params.testBranch),
       qs: params.query,
       'fandom-env': params.fandomEnvironment,
       extension: params.extension,
       'custom-name': params.name,
       'tabs-to-trigger': this.mapTagsToTrigger(projects),
     };
+  }
+
+  private ensureOrigin(branch?: string): string {
+    if (!branch || branch.startsWith('origin')) {
+      return branch;
+    }
+
+    return `origin/${branch}`;
   }
 
   private mapTagsToTrigger(projects: Project[]): string {
