@@ -19,5 +19,6 @@ const question: inquirer.Question = {
   message: 'Choose your default sandbox',
   validate: requiredInput,
   choices: sandboxes,
+  pageSize: sandboxes.length,
   default: store.sandbox,
 };

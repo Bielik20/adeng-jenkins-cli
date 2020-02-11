@@ -82,6 +82,7 @@ const questions: FilterParamQuestion[] = [
     message: 'Sandbox',
     validate: requiredInput,
     choices: sandboxes,
+    pageSize: sandboxes.length,
     default: store.sandbox,
     destined: {
       jobs: ['deploy', 'test'],
