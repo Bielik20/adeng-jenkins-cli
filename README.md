@@ -16,14 +16,14 @@
 </p>
 
 <p align="center">
-    <a href="https://travis-ci.com/bielik20/adeng-jenkins-cli">
-        <img alt="Travis" src="https://travis-ci.com/bielik20/adeng-jenkins-cli.svg?branch=master">
+    <a href="https://travis-ci.com/Bielik20/adeng-jenkins-cli">
+        <img alt="Travis" src="https://travis-ci.com/Bielik20/adeng-jenkins-cli.svg?branch=master">
     </a>
-    <a href="https://coveralls.io/github/bielik20/adeng-jenkins-cli?branch=master">
-        <img alt="Travis" src="https://coveralls.io/repos/github/bielik20/adeng-jenkins-cli/badge.svg?branch=master">
+    <a href="https://coveralls.io/github/Bielik20/adeng-jenkins-cli?branch=master">
+        <img alt="Travis" src="https://coveralls.io/repos/github/Bielik20/adeng-jenkins-cli/badge.svg?branch=master">
     </a>
-    <a href="https://snyk.io/test/github/bielik20/adeng-jenkins-cli?targetFile=package.json">
-        <img alt="Travis" src="https://snyk.io/test/github/bielik20/adeng-jenkins-cli/badge.svg?targetFile=package.json">
+    <a href="https://snyk.io/test/github/Bielik20/adeng-jenkins-cli?targetFile=package.json">
+        <img alt="Travis" src="https://snyk.io/test/github/Bielik20/adeng-jenkins-cli/badge.svg?targetFile=package.json">
     </a>
 </p>
 
