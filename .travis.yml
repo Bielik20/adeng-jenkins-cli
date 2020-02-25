@@ -1,0 +1,28 @@
+language: node_js
+
+cache:
+  directories:
+    - '$HOME/.npm'
+
+notifications:
+  email: false
+
+install: npm ci
+
+jobs:
+  include:
+    - stage: 'Test'
+      node_js: lts/*
+      script:
+        - npm run build
+        - npm run test:prod && npm run report-coverage
+
+    - stage: 'Release'
+      if: branch = master AND type = push
+      node_js: lts/*
+      script: skip
+      deploy:
+        provider: script
+        script: npx semantic-release
+        on:
+          branch: master
