@@ -20,7 +20,7 @@ interface DeployJobMobileWikiParams {
 
 export class DeployJobBuilder {
   private projectNameMap = new Map<Project, string>([
-    ['app', 'mediawiki-deploy-sandbox'],
+    ['app', 'mediawiki-deploy-sandbox-ucp'],
     ['mobile-wiki', 'mobile-wiki-deploy-sandbox'],
   ]);
 
