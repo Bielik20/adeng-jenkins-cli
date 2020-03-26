@@ -86,7 +86,7 @@ const questions: FilterParamQuestion[] = [
     default: store.sandbox,
     destined: {
       jobs: ['deploy', 'test'],
-      projects: ['app', 'mobile-wiki', 'f2'],
+      projects: ['ucp', 'app', 'mobile-wiki', 'f2'],
       extended: false,
     },
   },
