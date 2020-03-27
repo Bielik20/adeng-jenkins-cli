@@ -2,8 +2,9 @@ import { ParamsResult } from '../questions/param-questions.model';
 import { Project } from '../questions/project-questions';
 import { JobDescriptor } from './models';
 
-interface DeployJobAppParams {
+interface DeployJobAppAndUcpParams {
   sandbox: string;
+  ucp_branch: string;
   app_branch: string;
   config_branch: string;
   datacenter: string;
@@ -20,7 +21,8 @@ interface DeployJobMobileWikiParams {
 
 export class DeployJobBuilder {
   private projectNameMap = new Map<Project, string>([
-    ['app', 'mediawiki-deploy-sandbox'],
+    ['ucp', 'mediawiki-deploy-sandbox-ucp'],
+    ['app', 'mediawiki-deploy-sandbox-ucp'],
     ['mobile-wiki', 'mobile-wiki-deploy-sandbox'],
   ]);
 
@@ -43,11 +45,23 @@ export class DeployJobBuilder {
   private mapProjectParams(
     project: Project,
     input: ParamsResult,
-  ): DeployJobAppParams | DeployJobMobileWikiParams {
+  ): DeployJobAppAndUcpParams | DeployJobMobileWikiParams {
     switch (project) {
+      case 'ucp':
+        return {
+          sandbox: input.sandbox,
+          ucp_branch: input.branch,
+          app_branch: 'dev',
+          config_branch: input.configBranch,
+          datacenter: input.datacenter,
+          crowdin_branch: input.crowdinBranch,
+          debug: input.debug,
+        };
+
       case 'app':
         return {
           sandbox: input.sandbox,
+          ucp_branch: 'master',
           app_branch: input.branch,
           config_branch: input.configBranch,
           datacenter: input.datacenter,
