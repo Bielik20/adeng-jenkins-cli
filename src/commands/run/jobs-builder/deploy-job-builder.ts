@@ -27,7 +27,7 @@ export class DeployJobBuilder {
   ]);
 
   build(projects: Project[], params: ParamsResult): JobDescriptor[] {
-    return projects
+    const mappedProjects = projects
       .filter((project: Project) => this.projectNameMap.has(project))
       .map((project: Project) => ({
         displayName: project,
@@ -36,6 +36,37 @@ export class DeployJobBuilder {
           parameters: this.mapProjectParams(project, params),
         },
       }));
+
+    return this.mergeDoubledProjects(mappedProjects);
+  }
+
+  private mergeDoubledProjects(projects: JobDescriptor[]) {
+    const filteredProjects = new Map<string, JobDescriptor>();
+
+    projects.forEach(project => {
+      const currentProject = filteredProjects.get(project.opts.name);
+
+      if (currentProject) {
+        Object.keys(project.opts.parameters).forEach(key => {
+          console.log(
+            project.opts.parameters[key] !== currentProject.opts.parameters[key],
+            key,
+            key.includes(project.displayName),
+          );
+
+          if (
+            project.opts.parameters[key] !== currentProject.opts.parameters[key] &&
+            key.includes(project.displayName)
+          ) {
+            currentProject.opts.parameters[key] = project.opts.parameters[key];
+          }
+        });
+      }
+
+      filteredProjects.set(project.opts.name, currentProject || project);
+    });
+
+    return [...filteredProjects.values()];
   }
 
   private mapProjectName(input: Project): string {
