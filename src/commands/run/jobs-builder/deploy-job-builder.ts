@@ -48,12 +48,6 @@ export class DeployJobBuilder {
 
       if (currentProject) {
         Object.keys(project.opts.parameters).forEach(key => {
-          console.log(
-            project.opts.parameters[key] !== currentProject.opts.parameters[key],
-            key,
-            key.includes(project.displayName),
-          );
-
           if (
             project.opts.parameters[key] !== currentProject.opts.parameters[key] &&
             key.includes(project.displayName)
