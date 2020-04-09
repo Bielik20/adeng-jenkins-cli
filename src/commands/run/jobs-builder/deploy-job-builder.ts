@@ -40,7 +40,7 @@ export class DeployJobBuilder {
     return this.mergeDoubledProjects(mappedProjects);
   }
 
-  private mergeDoubledProjects(projects: JobDescriptor[]) {
+  private mergeDoubledProjects(projects: JobDescriptor[]): JobDescriptor[] {
     const filteredProjects = new Map<string, JobDescriptor>();
 
     projects.forEach(project => {
