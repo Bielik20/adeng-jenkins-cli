@@ -19,15 +19,20 @@ interface DeployJobMobileWikiParams {
   crowdin_branch: string;
 }
 
+type DeployProject = Project | 'app-ucp';
+
 export class DeployJobBuilder {
-  private projectNameMap = new Map<Project, string>([
+  private projectNameMap = new Map<DeployProject, string>([
+    ['app-ucp', 'mediawiki-deploy-sandbox-ucp'],
     ['ucp', 'mediawiki-deploy-sandbox-ucp'],
     ['app', 'mediawiki-deploy-sandbox-ucp'],
     ['mobile-wiki', 'mobile-wiki-deploy-sandbox'],
   ]);
 
   build(projects: Project[], params: ParamsResult): JobDescriptor[] {
-    return projects
+    const deployProjects = this.parseDeployProject(projects);
+
+    return deployProjects
       .filter((project: Project) => this.projectNameMap.has(project))
       .map((project: Project) => ({
         displayName: project,
@@ -38,15 +43,33 @@ export class DeployJobBuilder {
       }));
   }
 
+  private parseDeployProject(projects: Project[]): DeployProject[] {
+    if (projects.includes('app') && projects.includes('ucp')) {
+      return ['app-ucp', ...projects.filter(project => !['app', 'ucp'].includes(project))];
+    }
+    return projects;
+  }
+
   private mapProjectName(input: Project): string {
     return this.projectNameMap.get(input);
   }
 
   private mapProjectParams(
-    project: Project,
+    project: DeployProject,
     input: ParamsResult,
   ): DeployJobAppAndUcpParams | DeployJobMobileWikiParams {
     switch (project) {
+      case 'app-ucp':
+        return {
+          sandbox: input.sandbox,
+          ucp_branch: input.branch,
+          app_branch: input.branch,
+          config_branch: input.configBranch,
+          datacenter: input.datacenter,
+          crowdin_branch: input.crowdinBranch,
+          debug: input.debug,
+        };
+
       case 'ucp':
         return {
           sandbox: input.sandbox,
