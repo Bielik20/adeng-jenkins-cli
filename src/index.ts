@@ -1,17 +1,14 @@
-import chalk from 'chalk';
-import * as clear from 'clear';
 import * as program from 'commander';
-import { textSync } from 'figlet';
 import { login } from './commands/login';
 import { run } from './commands/run';
 import { sandbox } from './commands/sandbox';
 import { checkVersion } from './utils/check-version';
 import { list } from './utils/list';
 import { packageJson } from './utils/package';
+import { printHeader } from './utils/print-header';
 
 export async function start() {
-  clear();
-  console.log(chalk.yellow(textSync('AdEng Jenkins', { horizontalLayout: 'full' })), '\n');
+  printHeader();
   checkVersion();
 
   program.version(packageJson.version).description(packageJson.description);
