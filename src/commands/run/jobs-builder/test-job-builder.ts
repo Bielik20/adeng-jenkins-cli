@@ -17,8 +17,6 @@ export class TestJobBuilder {
     ['app', 'ads-app-preview'],
     ['mobile-wiki', 'ads-mobile-wiki-preview'],
     ['f2', 'ads-news-and-stories-prod'],
-    ['ucp-desktop', 'ads-ucp-desktop'],
-    ['ucp-mobile', 'ads-ucp-mobile'],
   ]);
 
   build(projects: Project[], params: ParamsResult): JobDescriptor[] {
