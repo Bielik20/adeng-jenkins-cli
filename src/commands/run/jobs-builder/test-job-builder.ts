@@ -5,7 +5,7 @@ import { JobDescriptor } from './models';
 interface TestJobParams {
   env: string;
   branch: string;
-  qs: string;
+  querystring: string;
   'fandom-env': string;
   extension: string;
   'custom-name': string;
@@ -35,7 +35,7 @@ export class TestJobBuilder {
     return {
       env: params.sandbox,
       branch: this.ensureOrigin(params.testBranch),
-      qs: params.query,
+      querystring: params.query,
       'fandom-env': params.fandomEnvironment,
       extension: params.extension,
       'custom-name': params.name,
