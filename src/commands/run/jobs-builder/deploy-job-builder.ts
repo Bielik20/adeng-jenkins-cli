@@ -19,6 +19,10 @@ interface DeployJobMobileWikiParams {
   crowdin_branch: string;
 }
 
+interface DeployPlatformsParams {
+  BRANCH: string;
+}
+
 type DeployProject = Project | 'app-ucp';
 
 export class DeployJobBuilder {
@@ -27,6 +31,7 @@ export class DeployJobBuilder {
     ['ucp', 'mediawiki-deploy-sandbox-ucp'],
     ['app', 'mediawiki-deploy-sandbox-ucp'],
     ['mobile-wiki', 'mobile-wiki-deploy-sandbox'],
+    ['platforms', 'ad_engine_platforms_deploy_branch'],
   ]);
 
   build(projects: Project[], params: ParamsResult): JobDescriptor[] {
@@ -57,7 +62,7 @@ export class DeployJobBuilder {
   private mapProjectParams(
     project: DeployProject,
     input: ParamsResult,
-  ): DeployJobAppAndUcpParams | DeployJobMobileWikiParams {
+  ): DeployJobAppAndUcpParams | DeployJobMobileWikiParams | DeployPlatformsParams {
     switch (project) {
       case 'app-ucp':
         return {
@@ -98,6 +103,11 @@ export class DeployJobBuilder {
           branch: input.branch,
           dc: input.datacenter,
           crowdin_branch: input.crowdinBranch,
+        };
+
+      case 'platforms':
+        return {
+          BRANCH: input.branch,
         };
     }
 
