@@ -11,4 +11,5 @@ export interface ParamsResult {
   fandomEnvironment?: string;
   extension?: string;
   name?: string;
+  platformsBranch?: string;
 }

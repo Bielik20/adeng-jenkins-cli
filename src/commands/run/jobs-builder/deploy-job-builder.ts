@@ -107,7 +107,7 @@ export class DeployJobBuilder {
 
       case 'platforms':
         return {
-          BRANCH: input.branch,
+          BRANCH: input.platformsBranch,
         };
     }
 
