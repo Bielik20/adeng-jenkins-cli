@@ -60,7 +60,7 @@ const questions: FilterParamQuestion[] = [
     default: currentBranch,
     destined: {
       jobs: ['update', 'deploy'],
-      projects: availableProjects,
+      projects: availableProjects.filter(project => project !== 'platforms'),
       extended: false,
     },
   },
@@ -183,6 +183,18 @@ const questions: FilterParamQuestion[] = [
     destined: {
       jobs: ['test'],
       projects: ['app', 'mobile-wiki', 'f2'],
+      extended: false,
+    },
+  },
+  {
+    name: 'platformsBranch',
+    message: 'Platform branch',
+    validate: requiredInput,
+    filter: adenToUpper,
+    transformer: adenToUpper,
+    destined: {
+      jobs: ['deploy'],
+      projects: ['platforms'],
       extended: false,
     },
   },
